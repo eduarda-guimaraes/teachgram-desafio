@@ -134,10 +134,11 @@ export const PostDetailsPage = () => {
         subtitle="Essa ação não poderá ser desfeita"
         onClose={() => setShowDelete(false)}
         size="sm"
+        className="teachgram-modal--confirm"
       >
-        <div className="d-grid gap-3">
+        <div className="teachgram-modal__stack teachgram-modal__stack--center">
           <p className="mb-0 small text-muted">Você realmente deseja apagar esta publicação?</p>
-          <div className="d-flex justify-content-center gap-2">
+          <div className="teachgram-modal__actions teachgram-modal__actions--center">
             <button type="button" className="btn btn-outline-secondary btn-sm" onClick={() => setShowDelete(false)}>
               Cancelar
             </button>

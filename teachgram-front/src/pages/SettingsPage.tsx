@@ -133,19 +133,19 @@ export const SettingsPage = ({ currentUser }: SettingsPageProps) => {
         title="Editar perfil"
         subtitle="Atualize sua foto, nome e bio"
         onClose={() => setShowEditProfile(false)}
-        size="md"
+        size="sm"
+        className="teachgram-modal--profile"
       >
-        <form className="d-grid gap-3">
-          <div className="d-flex align-items-center gap-3">
+        <form className="teachgram-modal__stack">
+          <div className="teachgram-profile-modal__avatar-row">
             <div
-              className="rounded-circle bg-light d-flex align-items-center justify-content-center flex-shrink-0"
-              style={{ width: 72, height: 72 }}
+              className="teachgram-profile-modal__avatar"
             >
               <span className="fw-semibold">{currentUser?.name?.[0] ?? 'M'}</span>
             </div>
-            <div className="small text-muted">
-              <strong className="d-block text-body mb-1">Foto de perfil</strong>
-              https://www.google.com/search?q=...
+            <div className="teachgram-profile-modal__hint">
+              <strong>Foto de perfil</strong>
+              <span>https://www.google.com/search?q=...</span>
             </div>
           </div>
 
@@ -165,7 +165,7 @@ export const SettingsPage = ({ currentUser }: SettingsPageProps) => {
             <textarea rows={3} value={form.bio} onChange={(event) => setForm({ ...form, bio: event.target.value })} />
           </label>
 
-          <div className="d-flex justify-content-end gap-2">
+          <div className="teachgram-modal__actions">
             <button type="button" className="btn btn-outline-secondary btn-sm" onClick={() => setShowEditProfile(false)}>
               Cancelar
             </button>
@@ -182,10 +182,11 @@ export const SettingsPage = ({ currentUser }: SettingsPageProps) => {
         subtitle="Todos os seus dados serão removidos"
         onClose={() => setShowDeleteAccount(false)}
         size="sm"
+        className="teachgram-modal--confirm"
       >
-        <div className="d-grid gap-3">
+        <div className="teachgram-modal__stack teachgram-modal__stack--center">
           <p className="mb-0 small text-muted">Tem certeza que deseja continuar?</p>
-          <div className="d-flex justify-content-center gap-2">
+          <div className="teachgram-modal__actions teachgram-modal__actions--center">
             <button type="button" className="btn btn-outline-secondary btn-sm" onClick={() => setShowDeleteAccount(false)}>
               Cancelar
             </button>

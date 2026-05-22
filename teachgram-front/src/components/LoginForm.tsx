@@ -122,11 +122,11 @@ export const LoginForm = ({ initialMode = 'login', onAuthenticated }: LoginFormP
 
   return (
     <section className="auth-form-shell w-100">
-      <div className="auth-brand mb-4 text-center text-lg-start">
+      <div className="auth-brand text-center text-lg-start">
         <img className="auth-brand__logo img-fluid" src={logoImg} alt="Teachgram" />
       </div>
 
-      <form className="auth-form d-grid gap-3" onSubmit={handleSubmit}>
+      <form className="auth-form d-grid gap-2" onSubmit={handleSubmit}>
         <header className="auth-form__header">
           <h2 className="h6 fw-bold mb-1">{mode === 'login' ? 'Faça seu login' : 'Crie sua conta'}</h2>
           <p className="text-muted small mb-0">
@@ -136,10 +136,10 @@ export const LoginForm = ({ initialMode = 'login', onAuthenticated }: LoginFormP
           </p>
         </header>
 
-        <div className="d-grid gap-2">
+        <div className="d-grid gap-1">
           {mode === 'register' ? (
             <>
-              <div className="mb-1">
+              <div className="mb-0">
                 <label className="form-label small fw-semibold mb-1">Nome</label>
                 <input
                   className="form-control form-control-sm"
@@ -150,7 +150,7 @@ export const LoginForm = ({ initialMode = 'login', onAuthenticated }: LoginFormP
                 />
               </div>
 
-              <div className="mb-1">
+              <div className="mb-0">
                 <label className="form-label small fw-semibold mb-1">E-mail</label>
                 <input
                   className="form-control form-control-sm"
@@ -162,7 +162,7 @@ export const LoginForm = ({ initialMode = 'login', onAuthenticated }: LoginFormP
                 />
               </div>
 
-              <div className="mb-1">
+              <div className="mb-0">
                 <label className="form-label small fw-semibold mb-1">Username</label>
                 <input
                   className="form-control form-control-sm"
@@ -173,7 +173,7 @@ export const LoginForm = ({ initialMode = 'login', onAuthenticated }: LoginFormP
                 />
               </div>
 
-              <div className="mb-1">
+              <div className="mb-0">
                 <label className="form-label small fw-semibold mb-1">Descrição</label>
                 <input
                   className="form-control form-control-sm"
@@ -183,7 +183,7 @@ export const LoginForm = ({ initialMode = 'login', onAuthenticated }: LoginFormP
                 />
               </div>
 
-              <div className="mb-1">
+              <div className="mb-0">
                 <label className="form-label small fw-semibold mb-1">Celular</label>
                 <input
                   className="form-control form-control-sm"
@@ -195,7 +195,7 @@ export const LoginForm = ({ initialMode = 'login', onAuthenticated }: LoginFormP
               </div>
             </>
           ) : (
-            <div className="mb-1">
+            <div className="mb-0">
               <label className="form-label small fw-semibold mb-1">E-mail</label>
               <input
                 className="form-control form-control-sm"
@@ -236,7 +236,7 @@ export const LoginForm = ({ initialMode = 'login', onAuthenticated }: LoginFormP
         </div>
 
         {mode === 'login' ? (
-          <div className="d-flex justify-content-between align-items-center gap-2 flex-wrap">
+          <div className="d-flex justify-content-between align-items-center gap-2 flex-wrap auth-form__row">
             <label className="form-check d-flex align-items-center gap-2 mb-0">
               <input className="form-check-input m-0" type="checkbox" />
               <span className="form-check-label small">Lembrar-me</span>
@@ -260,20 +260,22 @@ export const LoginForm = ({ initialMode = 'login', onAuthenticated }: LoginFormP
           </div>
         ) : null}
 
-        <button className="btn btn-primary w-100 fw-semibold" type="submit" disabled={loading}>
+        <button className="btn btn-primary btn-sm w-100 fw-semibold" type="submit" disabled={loading}>
           {loading ? (mode === 'login' ? 'Entrando...' : 'Criando conta...') : mode === 'login' ? 'Entrar' : 'Próximo'}
         </button>
 
         {mode === 'login' ? (
           <>
-            <div className="text-center text-muted small">ou continue com</div>
+            <div className="auth-divider">
+              <span>ou continue com</span>
+            </div>
 
-            <div className="d-grid gap-2">
-              <button type="button" className="btn btn-outline-secondary btn-sm d-flex align-items-center justify-content-center gap-2">
+            <div className="social-buttons">
+              <button type="button" className="social-button">
                 <span aria-hidden="true">G</span>
                 <span>Entrar com Google</span>
               </button>
-              <button type="button" className="btn btn-outline-secondary btn-sm d-flex align-items-center justify-content-center gap-2">
+              <button type="button" className="social-button">
                 <span aria-hidden="true"></span>
                 <span>Entrar com Apple</span>
               </button>

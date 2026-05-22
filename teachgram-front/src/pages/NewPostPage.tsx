@@ -99,10 +99,11 @@ export const NewPostPage = ({ currentUser }: NewPostPageProps) => {
         title="Criar nova publicação"
         subtitle={step === 'link' ? 'Adicione um link para começar' : 'Escreva o conteúdo da postagem'}
         onClose={closeModal}
-        size={step === 'link' ? 'sm' : 'lg'}
+        size={step === 'link' ? 'sm' : 'md'}
+        className={step === 'link' ? 'teachgram-modal--post-link' : 'teachgram-modal--post-compose'}
       >
         {step === 'link' ? (
-          <form className="d-grid gap-3" onSubmit={handleNext}>
+          <form className="teachgram-modal__stack" onSubmit={handleNext}>
             <input
               className="form-control form-control-sm"
               value={form.resourceLink}
@@ -110,7 +111,7 @@ export const NewPostPage = ({ currentUser }: NewPostPageProps) => {
               placeholder="Cole um link ou recurso"
             />
 
-            <div className="d-flex justify-content-end gap-2">
+            <div className="teachgram-modal__actions">
               <button type="button" className="btn btn-outline-secondary btn-sm" onClick={closeModal}>
                 Cancelar
               </button>
@@ -120,40 +121,34 @@ export const NewPostPage = ({ currentUser }: NewPostPageProps) => {
             </div>
           </form>
         ) : (
-          <form className="d-grid gap-3" onSubmit={handleSubmit}>
-            <div className="text-center">
+          <form className="teachgram-modal__stack" onSubmit={handleSubmit}>
+            <div className="teachgram-compose">
+              <div className="teachgram-compose__bar">
+                <button type="button" className="teachgram-compose__back" onClick={() => setStep('link')}>
+                  ←
+                </button>
+                <button type="submit" className="teachgram-compose__share">
+                  Compartilhar
+                </button>
+              </div>
+
               <img
                 src={heroImg}
                 alt="Prévia da publicação"
-                className="img-fluid rounded-4 shadow-sm"
+                className="teachgram-compose__image"
               />
-            </div>
 
-            <input
-              className="form-control form-control-sm"
-              value={form.title}
-              onChange={(event) => setForm({ ...form, title: event.target.value })}
-              placeholder="Escreva uma legenda..."
-            />
+              <textarea
+                className="teachgram-compose__caption"
+                rows={3}
+                value={form.description}
+                onChange={(event) => setForm({ ...form, description: event.target.value })}
+                placeholder="Escreva uma legenda..."
+              />
 
-            <textarea
-              className="form-control form-control-sm"
-              rows={4}
-              value={form.description}
-              onChange={(event) => setForm({ ...form, description: event.target.value })}
-              placeholder="Detalhe sua publicação"
-            />
-
-            <div className="d-flex justify-content-between align-items-center gap-2 flex-wrap">
-              <button type="button" className="btn btn-link btn-sm p-0" onClick={() => setStep('link')}>
-                Voltar
-              </button>
-              <div className="d-flex gap-2">
-                <button type="button" className="btn btn-outline-secondary btn-sm" onClick={closeModal}>
-                  Cancelar
-                </button>
-                <button type="submit" className="btn btn-primary btn-sm">
-                  Compartilhar
+              <div className="teachgram-modal__actions teachgram-modal__actions--start">
+                <button type="button" className="btn btn-link btn-sm p-0" onClick={() => setStep('link')}>
+                  Voltar
                 </button>
               </div>
             </div>

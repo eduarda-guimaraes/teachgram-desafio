@@ -8,9 +8,10 @@ interface ModalProps {
   onClose: () => void
   children: ReactNode
   size?: 'sm' | 'md' | 'lg'
+  className?: string
 }
 
-export const Modal = ({ open, title, subtitle, onClose, children, size = 'md' }: ModalProps) => {
+export const Modal = ({ open, title, subtitle, onClose, children, size = 'md', className }: ModalProps) => {
   useEffect(() => {
     if (!open) {
       return
@@ -44,22 +45,22 @@ export const Modal = ({ open, title, subtitle, onClose, children, size = 'md' }:
       onMouseDown={onClose}
     >
       <div
-        className={`teachgram-modal__dialog teachgram-modal__dialog--${size} modal-dialog modal-dialog-centered`}
+        className={`teachgram-modal__panel teachgram-modal__panel--${size} ${className ?? ''}`.trim()}
         onMouseDown={(event) => event.stopPropagation()}
       >
-        <div className="modal-content border-0 rounded-4 shadow-lg">
-          <div className="modal-header border-0 pb-2">
-            <div>
-              <h2 id="teachgram-modal-title" className="modal-title h6 fw-bold mb-1">
-                {title}
-              </h2>
-              {subtitle ? <p className="teachgram-modal__subtitle text-muted small mb-0">{subtitle}</p> : null}
-            </div>
-            <button type="button" className="btn-close" aria-label="Fechar" onClick={onClose} />
+        <div className="teachgram-modal__header">
+          <div>
+            <h2 id="teachgram-modal-title" className="teachgram-modal__title">
+              {title}
+            </h2>
+            {subtitle ? <p className="teachgram-modal__subtitle mb-0">{subtitle}</p> : null}
           </div>
-
-          <div className="modal-body pt-2">{children}</div>
+          <button type="button" className="teachgram-modal__close" aria-label="Fechar" onClick={onClose}>
+            <span aria-hidden="true">x</span>
+          </button>
         </div>
+
+        <div className="teachgram-modal__body">{children}</div>
       </div>
     </div>,
     document.body,

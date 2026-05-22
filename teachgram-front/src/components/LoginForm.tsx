@@ -1,0 +1,292 @@
+import { useState, type FormEvent } from 'react'
+import { loginUser, registerUser } from '../services/authService'
+import type { LoginCredentials, RegisterCredentials } from '../models/User'
+
+type AuthMode = 'login' | 'register'
+
+type FormState = {
+  name: string
+  email: string
+  username: string
+  bio: string
+  phone: string
+  password: string
+  confirmPassword: string
+}
+
+const initialFormState: FormState = {
+  name: '',
+  email: '',
+  username: '',
+  bio: '',
+  phone: '',
+  password: '',
+  confirmPassword: '',
+}
+
+export const LoginForm = () => {
+  const [mode, setMode] = useState<AuthMode>('login')
+  const [form, setForm] = useState<FormState>(initialFormState)
+  const [loading, setLoading] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
+  const [successMessage, setSuccessMessage] = useState('')
+
+  const updateField = (field: keyof FormState) => (value: string) => {
+    setForm((current) => ({
+      ...current,
+      [field]: value,
+    }))
+  }
+
+  const switchMode = (nextMode: AuthMode) => {
+    setMode(nextMode)
+    setErrorMessage('')
+    setSuccessMessage('')
+    setForm((current) => ({
+      ...current,
+      password: '',
+      confirmPassword: '',
+    }))
+  }
+
+  const handleLogin = async (credentials: LoginCredentials) => {
+    const user = await loginUser(credentials)
+    setSuccessMessage(`Bem-vindo, ${user.name ?? user.username}.`)
+    return user
+  }
+
+  const handleRegister = async (credentials: RegisterCredentials) => {
+    const user = await registerUser(credentials)
+    setMode('login')
+    setErrorMessage('')
+    setSuccessMessage('Conta criada com sucesso. Agora você pode entrar.')
+    setForm({
+      ...initialFormState,
+      email: credentials.email,
+    })
+    return user
+  }
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setLoading(true)
+    setErrorMessage('')
+    setSuccessMessage('')
+
+    try {
+      if (mode === 'login') {
+        await handleLogin({
+          email: form.email.trim(),
+          password: form.password,
+        })
+        return
+      }
+
+      if (form.password !== form.confirmPassword) {
+        setErrorMessage('As senhas precisam ser iguais.')
+        return
+      }
+
+      await handleRegister({
+        name: form.name.trim(),
+        email: form.email.trim(),
+        username: form.username.trim(),
+        password: form.password,
+        phone: form.phone.trim() || undefined,
+        bio: form.bio.trim() || undefined,
+      })
+    } catch {
+      setErrorMessage(
+        mode === 'login'
+          ? 'E-mail ou senha inválidos. Verifique seus dados e tente novamente.'
+          : 'Não foi possível criar a conta. Verifique se e-mail e usuário já não estão em uso.'
+      )
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <section className="auth-form-shell">
+      <div className="auth-brand auth-brand--mobile">
+        <span className="auth-brand__mark" aria-hidden="true">
+          T
+        </span>
+        <div>
+          <p className="auth-brand__name">Teachgram</p>
+          <p className="auth-brand__subtitle">Rede social educacional</p>
+        </div>
+      </div>
+
+      <div className="auth-tabs" role="tablist" aria-label="Autenticação">
+        <button
+          type="button"
+          className={mode === 'login' ? 'auth-tab is-active' : 'auth-tab'}
+          onClick={() => switchMode('login')}
+        >
+          Login
+        </button>
+        <button
+          type="button"
+          className={mode === 'register' ? 'auth-tab is-active' : 'auth-tab'}
+          onClick={() => switchMode('register')}
+        >
+          Criar conta
+        </button>
+      </div>
+
+      <form className="auth-form" onSubmit={handleSubmit}>
+        <header className="auth-form__header">
+          <h2>{mode === 'login' ? 'Faça seu login' : 'Crie sua conta'}</h2>
+          <p>
+            {mode === 'login'
+              ? 'Use seu e-mail e sua senha para acessar.'
+              : 'Preencha os campos abaixo para começar.'}
+          </p>
+        </header>
+
+        {mode === 'register' ? (
+          <>
+            <label className="field">
+              <span>Nome</span>
+              <input
+                autoComplete="name"
+                placeholder="Digite seu nome"
+                value={form.name}
+                onChange={(e) => updateField('name')(e.target.value)}
+              />
+            </label>
+
+            <label className="field">
+              <span>E-mail</span>
+              <input
+                autoComplete="email"
+                placeholder="Digite seu e-mail"
+                type="email"
+                value={form.email}
+                onChange={(e) => updateField('email')(e.target.value)}
+              />
+            </label>
+
+            <label className="field">
+              <span>Username</span>
+              <input
+                autoComplete="username"
+                placeholder="@seu_usuario"
+                value={form.username}
+                onChange={(e) => updateField('username')(e.target.value)}
+              />
+            </label>
+
+            <label className="field">
+              <span>Descrição</span>
+              <input
+                placeholder="Fale um pouco sobre você"
+                value={form.bio}
+                onChange={(e) => updateField('bio')(e.target.value)}
+              />
+            </label>
+
+            <label className="field">
+              <span>Celular</span>
+              <input
+                autoComplete="tel"
+                placeholder="Digite seu número de celular"
+                value={form.phone}
+                onChange={(e) => updateField('phone')(e.target.value)}
+              />
+            </label>
+          </>
+        ) : (
+          <label className="field">
+            <span>E-mail</span>
+            <input
+              autoComplete="email"
+              placeholder="Digite seu e-mail"
+              type="email"
+              value={form.email}
+              onChange={(e) => updateField('email')(e.target.value)}
+            />
+          </label>
+        )}
+
+        <label className="field">
+          <span>Senha</span>
+          <input
+            autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
+            placeholder="Digite sua senha"
+            type="password"
+            value={form.password}
+            onChange={(e) => updateField('password')(e.target.value)}
+          />
+        </label>
+
+        {mode === 'register' ? (
+          <label className="field">
+            <span>Confirmar senha</span>
+            <input
+              autoComplete="new-password"
+              placeholder="Repita a sua senha"
+              type="password"
+              value={form.confirmPassword}
+              onChange={(e) => updateField('confirmPassword')(e.target.value)}
+            />
+          </label>
+        ) : null}
+
+        {mode === 'login' ? (
+          <div className="auth-form__row">
+            <label className="checkbox">
+              <input type="checkbox" />
+              <span>Lembrar-me</span>
+            </label>
+
+            <button type="button" className="link-button">
+              Esqueci a senha
+            </button>
+          </div>
+        ) : null}
+
+        {errorMessage ? (
+          <div className="auth-alert auth-alert--error" role="alert">
+            {errorMessage}
+          </div>
+        ) : null}
+
+        {successMessage ? (
+          <div className="auth-alert auth-alert--success" role="status">
+            {successMessage}
+          </div>
+        ) : null}
+
+        <button className="primary-button" type="submit" disabled={loading}>
+          {loading
+            ? mode === 'login'
+              ? 'Entrando...'
+              : 'Criando conta...'
+            : mode === 'login'
+              ? 'Entrar'
+              : 'Próximo'}
+        </button>
+
+        <p className="auth-form__footer">
+          {mode === 'login' ? (
+            <>
+              Não possui conta?{' '}
+              <button type="button" onClick={() => switchMode('register')}>
+                Criar conta
+              </button>
+            </>
+          ) : (
+            <>
+              Já possui conta?{' '}
+              <button type="button" onClick={() => switchMode('login')}>
+                Entrar
+              </button>
+            </>
+          )}
+        </p>
+      </form>
+    </section>
+  )
+}

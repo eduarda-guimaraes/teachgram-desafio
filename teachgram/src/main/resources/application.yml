@@ -1,0 +1,9 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/teachgram
+    username: postgres
+    password: peixinho
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true

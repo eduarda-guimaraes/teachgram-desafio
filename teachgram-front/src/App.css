@@ -2097,6 +2097,7 @@
   position: absolute;
   inset: 0;
   backdrop-filter: blur(1px);
+  z-index: 0;
 }
 
 .friends-page__modal {
@@ -2278,4 +2279,134 @@
   .friends-page__modal {
     width: calc(100% - 24px);
   }
+}
+
+/* Bootstrap-responsive overrides */
+.app-shell.app-shell--bootstrap {
+  display: block;
+  min-height: 100vh;
+  padding: 0;
+}
+
+.app-shell--bootstrap .app-sidebar {
+  position: sticky;
+  top: 1rem;
+  height: auto;
+  min-height: calc(100vh - 2rem);
+}
+
+.app-shell--bootstrap .app-board {
+  min-height: calc(100vh - 2rem);
+  padding: 0;
+}
+
+.auth-page {
+  display: block;
+  padding: 1rem;
+}
+
+.auth-content {
+  display: flex;
+  flex-wrap: wrap;
+  min-height: auto;
+}
+
+.auth-form-panel {
+  width: 100%;
+}
+
+.auth-illustration {
+  min-height: 100%;
+}
+
+.loading-page {
+  display: flex;
+}
+
+.profile-page {
+  padding: 0;
+}
+
+.profile-page__hero {
+  display: flex;
+}
+
+.profile-page__stats {
+  display: flex;
+  margin-left: 0;
+  padding-left: 0;
+}
+
+.profile-page__grid {
+  display: flex;
+  flex-wrap: wrap;
+  margin-left: 0;
+  max-width: none;
+}
+
+.profile-page__grid > .col {
+  padding: 0;
+}
+
+.friends-page {
+  display: flex;
+  min-height: 100vh;
+}
+
+.friends-page__search {
+  position: static;
+  width: 100%;
+}
+
+.friends-page__search input {
+  width: auto;
+  height: auto;
+}
+
+.friends-page__modal {
+  width: 100%;
+}
+
+body.modal-open {
+  overflow: hidden;
+}
+
+.teachgram-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1055;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(37, 31, 33, 0.48);
+  backdrop-filter: blur(6px);
+}
+
+.teachgram-modal__dialog {
+  width: 100%;
+  margin: 0;
+}
+
+.teachgram-modal__dialog--sm {
+  max-width: 360px;
+}
+
+.teachgram-modal__dialog--md {
+  max-width: 560px;
+}
+
+.teachgram-modal__dialog--lg {
+  max-width: 720px;
+}
+
+.teachgram-modal .modal-content {
+  overflow: hidden;
+}
+
+.teachgram-modal__subtitle {
+  color: #8a7c82;
+}
+
+.teachgram-modal .btn-close {
+  box-shadow: none;
 }

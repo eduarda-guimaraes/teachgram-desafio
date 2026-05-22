@@ -121,157 +121,159 @@ export const LoginForm = ({ initialMode = 'login', onAuthenticated }: LoginFormP
   }
 
   return (
-    <section className="auth-form-shell">
-      <div className="auth-brand">
-        <img className="auth-brand__logo" src={logoImg} alt="Teachgram" />
+    <section className="auth-form-shell w-100">
+      <div className="auth-brand mb-4 text-center text-lg-start">
+        <img className="auth-brand__logo img-fluid" src={logoImg} alt="Teachgram" />
       </div>
 
-      <form className="auth-form" onSubmit={handleSubmit}>
+      <form className="auth-form d-grid gap-3" onSubmit={handleSubmit}>
         <header className="auth-form__header">
-          <h2>{mode === 'login' ? 'Faça seu login' : 'Crie sua conta'}</h2>
-          <p>
+          <h2 className="h6 fw-bold mb-1">{mode === 'login' ? 'Faça seu login' : 'Crie sua conta'}</h2>
+          <p className="text-muted small mb-0">
             {mode === 'login'
               ? 'Use seu e-mail e sua senha para acessar.'
               : 'Preencha os campos abaixo para começar.'}
           </p>
         </header>
 
-        {mode === 'register' ? (
-          <>
-            <label className="field">
-              <span>Nome</span>
-              <input
-                autoComplete="name"
-                placeholder="Digite seu nome"
-                value={form.name}
-                onChange={(e) => updateField('name')(e.target.value)}
-              />
-            </label>
+        <div className="d-grid gap-2">
+          {mode === 'register' ? (
+            <>
+              <div className="mb-1">
+                <label className="form-label small fw-semibold mb-1">Nome</label>
+                <input
+                  className="form-control form-control-sm"
+                  autoComplete="name"
+                  placeholder="Digite seu nome"
+                  value={form.name}
+                  onChange={(e) => updateField('name')(e.target.value)}
+                />
+              </div>
 
-            <label className="field">
-              <span>E-mail</span>
+              <div className="mb-1">
+                <label className="form-label small fw-semibold mb-1">E-mail</label>
+                <input
+                  className="form-control form-control-sm"
+                  autoComplete="email"
+                  placeholder="Digite seu e-mail"
+                  type="email"
+                  value={form.email}
+                  onChange={(e) => updateField('email')(e.target.value)}
+                />
+              </div>
+
+              <div className="mb-1">
+                <label className="form-label small fw-semibold mb-1">Username</label>
+                <input
+                  className="form-control form-control-sm"
+                  autoComplete="username"
+                  placeholder="@seu_usuario"
+                  value={form.username}
+                  onChange={(e) => updateField('username')(e.target.value)}
+                />
+              </div>
+
+              <div className="mb-1">
+                <label className="form-label small fw-semibold mb-1">Descrição</label>
+                <input
+                  className="form-control form-control-sm"
+                  placeholder="Fale um pouco sobre você"
+                  value={form.bio}
+                  onChange={(e) => updateField('bio')(e.target.value)}
+                />
+              </div>
+
+              <div className="mb-1">
+                <label className="form-label small fw-semibold mb-1">Celular</label>
+                <input
+                  className="form-control form-control-sm"
+                  autoComplete="tel"
+                  placeholder="Digite seu número de celular"
+                  value={form.phone}
+                  onChange={(e) => updateField('phone')(e.target.value)}
+                />
+              </div>
+            </>
+          ) : (
+            <div className="mb-1">
+              <label className="form-label small fw-semibold mb-1">E-mail</label>
               <input
+                className="form-control form-control-sm"
                 autoComplete="email"
                 placeholder="Digite seu e-mail"
                 type="email"
                 value={form.email}
                 onChange={(e) => updateField('email')(e.target.value)}
               />
-            </label>
+            </div>
+          )}
 
-            <label className="field">
-              <span>Username</span>
-              <input
-                autoComplete="username"
-                placeholder="@seu_usuario"
-                value={form.username}
-                onChange={(e) => updateField('username')(e.target.value)}
-              />
-            </label>
-
-            <label className="field">
-              <span>Descrição</span>
-              <input
-                placeholder="Fale um pouco sobre você"
-                value={form.bio}
-                onChange={(e) => updateField('bio')(e.target.value)}
-              />
-            </label>
-
-            <label className="field">
-              <span>Celular</span>
-              <input
-                autoComplete="tel"
-                placeholder="Digite seu número de celular"
-                value={form.phone}
-                onChange={(e) => updateField('phone')(e.target.value)}
-              />
-            </label>
-          </>
-        ) : (
-          <label className="field">
-            <span>E-mail</span>
+          <div className="mb-1">
+            <label className="form-label small fw-semibold mb-1">Senha</label>
             <input
-              autoComplete="email"
-              placeholder="Digite seu e-mail"
-              type="email"
-              value={form.email}
-              onChange={(e) => updateField('email')(e.target.value)}
-            />
-          </label>
-        )}
-
-        <label className="field">
-          <span>Senha</span>
-          <input
-            autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
-            placeholder="Digite sua senha"
-            type="password"
-            value={form.password}
-            onChange={(e) => updateField('password')(e.target.value)}
-          />
-        </label>
-
-        {mode === 'register' ? (
-          <label className="field">
-            <span>Confirmar senha</span>
-            <input
-              autoComplete="new-password"
-              placeholder="Repita a sua senha"
+              className="form-control form-control-sm"
+              autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
+              placeholder="Digite sua senha"
               type="password"
-              value={form.confirmPassword}
-              onChange={(e) => updateField('confirmPassword')(e.target.value)}
+              value={form.password}
+              onChange={(e) => updateField('password')(e.target.value)}
             />
-          </label>
-        ) : null}
+          </div>
+
+          {mode === 'register' ? (
+            <div className="mb-1">
+              <label className="form-label small fw-semibold mb-1">Confirmar senha</label>
+              <input
+                className="form-control form-control-sm"
+                autoComplete="new-password"
+                placeholder="Repita a sua senha"
+                type="password"
+                value={form.confirmPassword}
+                onChange={(e) => updateField('confirmPassword')(e.target.value)}
+              />
+            </div>
+          ) : null}
+        </div>
 
         {mode === 'login' ? (
-          <div className="auth-form__row">
-            <label className="checkbox">
-              <input type="checkbox" />
-              <span>Lembrar-me</span>
+          <div className="d-flex justify-content-between align-items-center gap-2 flex-wrap">
+            <label className="form-check d-flex align-items-center gap-2 mb-0">
+              <input className="form-check-input m-0" type="checkbox" />
+              <span className="form-check-label small">Lembrar-me</span>
             </label>
 
-            <button type="button" className="link-button">
+            <button type="button" className="btn btn-link btn-sm p-0 text-decoration-none">
               Recuperar senha
             </button>
           </div>
         ) : null}
 
         {errorMessage ? (
-          <div className="auth-alert auth-alert--error" role="alert">
+          <div className="alert alert-danger py-2 mb-0 small" role="alert">
             {errorMessage}
           </div>
         ) : null}
 
         {successMessage ? (
-          <div className="auth-alert auth-alert--success" role="status">
+          <div className="alert alert-success py-2 mb-0 small" role="status">
             {successMessage}
           </div>
         ) : null}
 
-        <button className="primary-button" type="submit" disabled={loading}>
-          {loading
-            ? mode === 'login'
-              ? 'Entrando...'
-              : 'Criando conta...'
-            : mode === 'login'
-              ? 'Entrar'
-              : 'Próximo'}
+        <button className="btn btn-primary w-100 fw-semibold" type="submit" disabled={loading}>
+          {loading ? (mode === 'login' ? 'Entrando...' : 'Criando conta...') : mode === 'login' ? 'Entrar' : 'Próximo'}
         </button>
 
         {mode === 'login' ? (
           <>
-            <div className="auth-divider">
-              <span>ou continue com</span>
-            </div>
+            <div className="text-center text-muted small">ou continue com</div>
 
-            <div className="social-buttons">
-              <button type="button" className="social-button">
+            <div className="d-grid gap-2">
+              <button type="button" className="btn btn-outline-secondary btn-sm d-flex align-items-center justify-content-center gap-2">
                 <span aria-hidden="true">G</span>
                 <span>Entrar com Google</span>
               </button>
-              <button type="button" className="social-button">
+              <button type="button" className="btn btn-outline-secondary btn-sm d-flex align-items-center justify-content-center gap-2">
                 <span aria-hidden="true"></span>
                 <span>Entrar com Apple</span>
               </button>
@@ -279,18 +281,18 @@ export const LoginForm = ({ initialMode = 'login', onAuthenticated }: LoginFormP
           </>
         ) : null}
 
-        <p className="auth-form__footer">
+        <p className="auth-form__footer text-center small mb-0">
           {mode === 'login' ? (
             <>
               Não possui conta?{' '}
-              <button type="button" onClick={() => switchMode('register')}>
+              <button type="button" className="btn btn-link btn-sm p-0 align-baseline" onClick={() => switchMode('register')}>
                 Cadastre-se
               </button>
             </>
           ) : (
             <>
               Já possui conta?{' '}
-              <button type="button" onClick={() => switchMode('login')}>
+              <button type="button" className="btn btn-link btn-sm p-0 align-baseline" onClick={() => switchMode('login')}>
                 Entrar
               </button>
             </>

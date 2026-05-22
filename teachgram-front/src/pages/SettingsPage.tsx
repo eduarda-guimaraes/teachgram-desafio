@@ -1,6 +1,6 @@
-﻿import { useState } from 'react'
-import type { FormEvent } from 'react'
+import { useState, type FormEvent } from 'react'
 import type { User as AuthUser } from '../models/User'
+import { Modal } from '../components/Modal'
 
 interface SettingsPageProps {
   currentUser: AuthUser | null
@@ -16,6 +16,8 @@ export const SettingsPage = ({ currentUser }: SettingsPageProps) => {
   const [notifications, setNotifications] = useState(true)
   const [weeklySummary, setWeeklySummary] = useState(true)
   const [message, setMessage] = useState('')
+  const [showDeleteAccount, setShowDeleteAccount] = useState(false)
+  const [showEditProfile, setShowEditProfile] = useState(false)
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -30,6 +32,9 @@ export const SettingsPage = ({ currentUser }: SettingsPageProps) => {
             <p className="section-eyebrow">Conta</p>
             <h2>Atualize suas informações</h2>
           </div>
+          <button type="button" className="btn btn-outline-primary btn-sm" onClick={() => setShowEditProfile(true)}>
+            Editar perfil
+          </button>
         </div>
 
         <form className="settings-form" onSubmit={handleSubmit}>
@@ -68,8 +73,8 @@ export const SettingsPage = ({ currentUser }: SettingsPageProps) => {
           {message ? <div className="auth-alert auth-alert--success">{message}</div> : null}
 
           <div className="form-actions">
-            <button type="button" className="secondary-button">
-              Cancelar
+            <button type="button" className="secondary-button" onClick={() => setShowDeleteAccount(true)}>
+              Excluir conta
             </button>
             <button type="submit" className="primary-button">
               Salvar alterações
@@ -122,6 +127,74 @@ export const SettingsPage = ({ currentUser }: SettingsPageProps) => {
           </div>
         </section>
       </aside>
+
+      <Modal
+        open={showEditProfile}
+        title="Editar perfil"
+        subtitle="Atualize sua foto, nome e bio"
+        onClose={() => setShowEditProfile(false)}
+        size="md"
+      >
+        <form className="d-grid gap-3">
+          <div className="d-flex align-items-center gap-3">
+            <div
+              className="rounded-circle bg-light d-flex align-items-center justify-content-center flex-shrink-0"
+              style={{ width: 72, height: 72 }}
+            >
+              <span className="fw-semibold">{currentUser?.name?.[0] ?? 'M'}</span>
+            </div>
+            <div className="small text-muted">
+              <strong className="d-block text-body mb-1">Foto de perfil</strong>
+              https://www.google.com/search?q=...
+            </div>
+          </div>
+
+          <label className="field">
+            <span>Nome</span>
+            <input value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} />
+          </label>
+          <label className="field">
+            <span>Nome de usuário</span>
+            <input
+              value={form.username}
+              onChange={(event) => setForm({ ...form, username: event.target.value })}
+            />
+          </label>
+          <label className="field">
+            <span>Bio</span>
+            <textarea rows={3} value={form.bio} onChange={(event) => setForm({ ...form, bio: event.target.value })} />
+          </label>
+
+          <div className="d-flex justify-content-end gap-2">
+            <button type="button" className="btn btn-outline-secondary btn-sm" onClick={() => setShowEditProfile(false)}>
+              Cancelar
+            </button>
+            <button type="button" className="btn btn-primary btn-sm" onClick={() => setShowEditProfile(false)}>
+              Atualizar
+            </button>
+          </div>
+        </form>
+      </Modal>
+
+      <Modal
+        open={showDeleteAccount}
+        title="Excluir conta"
+        subtitle="Todos os seus dados serão removidos"
+        onClose={() => setShowDeleteAccount(false)}
+        size="sm"
+      >
+        <div className="d-grid gap-3">
+          <p className="mb-0 small text-muted">Tem certeza que deseja continuar?</p>
+          <div className="d-flex justify-content-center gap-2">
+            <button type="button" className="btn btn-outline-secondary btn-sm" onClick={() => setShowDeleteAccount(false)}>
+              Cancelar
+            </button>
+            <button type="button" className="btn btn-danger btn-sm" onClick={() => setShowDeleteAccount(false)}>
+              Confirmar
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   )
 }

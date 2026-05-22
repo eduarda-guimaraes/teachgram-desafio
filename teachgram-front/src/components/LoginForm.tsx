@@ -1,6 +1,7 @@
-import { useState, type FormEvent } from 'react'
+﻿import { useEffect, useState, type FormEvent } from 'react'
 import { loginUser, registerUser } from '../services/authService'
-import type { LoginCredentials, RegisterCredentials } from '../models/User'
+import type { LoginCredentials, RegisterCredentials, User } from '../models/User'
+import logoImg from '../assets/logo.png'
 
 type AuthMode = 'login' | 'register'
 
@@ -24,12 +25,24 @@ const initialFormState: FormState = {
   confirmPassword: '',
 }
 
-export const LoginForm = () => {
-  const [mode, setMode] = useState<AuthMode>('login')
+interface LoginFormProps {
+  initialMode?: AuthMode
+  onAuthenticated?: (user: User) => void
+}
+
+export const LoginForm = ({ initialMode = 'login', onAuthenticated }: LoginFormProps) => {
+  const [mode, setMode] = useState<AuthMode>(initialMode)
   const [form, setForm] = useState<FormState>(initialFormState)
   const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const [successMessage, setSuccessMessage] = useState('')
+
+  useEffect(() => {
+    setMode(initialMode)
+    setErrorMessage('')
+    setSuccessMessage('')
+    setForm(initialFormState)
+  }, [initialMode])
 
   const updateField = (field: keyof FormState) => (value: string) => {
     setForm((current) => ({
@@ -52,6 +65,7 @@ export const LoginForm = () => {
   const handleLogin = async (credentials: LoginCredentials) => {
     const user = await loginUser(credentials)
     setSuccessMessage(`Bem-vindo, ${user.name ?? user.username}.`)
+    onAuthenticated?.(user)
     return user
   }
 
@@ -99,7 +113,7 @@ export const LoginForm = () => {
       setErrorMessage(
         mode === 'login'
           ? 'E-mail ou senha inválidos. Verifique seus dados e tente novamente.'
-          : 'Não foi possível criar a conta. Verifique se e-mail e usuário já não estão em uso.'
+          : 'Não foi possível criar a conta. Verifique se e-mail e usuário já não estão em uso.',
       )
     } finally {
       setLoading(false)
@@ -108,31 +122,8 @@ export const LoginForm = () => {
 
   return (
     <section className="auth-form-shell">
-      <div className="auth-brand auth-brand--mobile">
-        <span className="auth-brand__mark" aria-hidden="true">
-          T
-        </span>
-        <div>
-          <p className="auth-brand__name">Teachgram</p>
-          <p className="auth-brand__subtitle">Rede social educacional</p>
-        </div>
-      </div>
-
-      <div className="auth-tabs" role="tablist" aria-label="Autenticação">
-        <button
-          type="button"
-          className={mode === 'login' ? 'auth-tab is-active' : 'auth-tab'}
-          onClick={() => switchMode('login')}
-        >
-          Login
-        </button>
-        <button
-          type="button"
-          className={mode === 'register' ? 'auth-tab is-active' : 'auth-tab'}
-          onClick={() => switchMode('register')}
-        >
-          Criar conta
-        </button>
+      <div className="auth-brand">
+        <img className="auth-brand__logo" src={logoImg} alt="Teachgram" />
       </div>
 
       <form className="auth-form" onSubmit={handleSubmit}>
@@ -242,7 +233,7 @@ export const LoginForm = () => {
             </label>
 
             <button type="button" className="link-button">
-              Esqueci a senha
+              Recuperar senha
             </button>
           </div>
         ) : null}
@@ -269,12 +260,31 @@ export const LoginForm = () => {
               : 'Próximo'}
         </button>
 
+        {mode === 'login' ? (
+          <>
+            <div className="auth-divider">
+              <span>ou continue com</span>
+            </div>
+
+            <div className="social-buttons">
+              <button type="button" className="social-button">
+                <span aria-hidden="true">G</span>
+                <span>Entrar com Google</span>
+              </button>
+              <button type="button" className="social-button">
+                <span aria-hidden="true"></span>
+                <span>Entrar com Apple</span>
+              </button>
+            </div>
+          </>
+        ) : null}
+
         <p className="auth-form__footer">
           {mode === 'login' ? (
             <>
               Não possui conta?{' '}
               <button type="button" onClick={() => switchMode('register')}>
-                Criar conta
+                Cadastre-se
               </button>
             </>
           ) : (

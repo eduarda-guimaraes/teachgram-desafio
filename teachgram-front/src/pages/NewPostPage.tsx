@@ -1,6 +1,5 @@
-import { useMemo, useState, type FormEvent } from 'react'
+import { useState, type FormEvent } from 'react'
 import type { User as AuthUser } from '../models/User'
-import { Modal } from '../components/Modal'
 import heroImg from '../assets/hero.png'
 import { createPost } from '../services/postService'
 import { getApiErrorMessage } from '../services/errorService'
@@ -18,25 +17,10 @@ const initialValues = {
 
 export const NewPostPage = ({ currentUser }: NewPostPageProps) => {
   const [form, setForm] = useState(initialValues)
-  const [showModal, setShowModal] = useState(true)
   const [step, setStep] = useState<'link' | 'compose'>('link')
   const [message, setMessage] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
   const [loading, setLoading] = useState(false)
-
-  const previewTitle = form.title || 'Título da sua publicação'
-  const previewDescription =
-    form.description ||
-    'Escreva uma ideia, compartilhe um material ou descreva uma prática que pode inspirar outras pessoas.'
-
-  const previewTag = useMemo(
-    () => (form.visibility === 'private' ? 'Privado' : 'Público'),
-    [form.visibility],
-  )
-
-  const closeModal = () => {
-    setShowModal(false)
-  }
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -54,7 +38,7 @@ export const NewPostPage = ({ currentUser }: NewPostPageProps) => {
       setMessage('Sua publicação foi compartilhada com sucesso.')
       setForm(initialValues)
       setStep('link')
-      closeModal()
+      window.history.back()
     } catch (error) {
       setErrorMessage(getApiErrorMessage(error, 'Não foi possível criar a publicação.'))
     } finally {
@@ -68,127 +52,86 @@ export const NewPostPage = ({ currentUser }: NewPostPageProps) => {
   }
 
   return (
-    <div className="page-layout page-layout--compose position-relative">
-      <section className="content-panel content-panel--wide">
-        <div className="content-panel__header">
-          <div>
-            <p className="section-eyebrow">Novo conteúdo</p>
-            <h2>Monte uma nova publicação</h2>
-          </div>
-          <button type="button" className="btn btn-outline-primary btn-sm" onClick={() => setShowModal(true)}>
-            Abrir modal
+    <div className="friends-page position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style={{ zIndex: 1040, background: 'rgba(0,0,0,0.4)' }}>
+      <div className="friends-page__backdrop" onClick={() => window.history.back()} style={{ cursor: 'pointer' }} />
+
+      <div className="bg-white rounded-4 shadow-lg position-relative" style={{ width: 360, zIndex: 1050, overflow: 'hidden' }}>
+        <div className="d-flex align-items-center justify-content-between p-3 border-bottom">
+          <button type="button" className="btn btn-link text-danger p-0 text-decoration-none" onClick={() => step === 'compose' ? setStep('link') : window.history.back()}>
+            <span style={{ fontSize: '1.2rem' }}>←</span>
           </button>
+          <h2 className="h6 fw-bold mb-0">Criar nova publicação</h2>
+          <span className="text-danger small" style={{ cursor: 'pointer' }}>Salvar</span>
         </div>
 
-        <div className="compose-page__hint alert alert-light border small mb-0">
-          O fluxo abaixo abre como modal, igual ao Figma. Se preferir, use o botão para reabrir.
-        </div>
+        <div className="p-3">
+          {message && <div className="auth-alert auth-alert--success mb-3">{message}</div>}
+          {errorMessage && <div className="auth-alert auth-alert--error mb-3">{errorMessage}</div>}
 
-        {message ? <div className="auth-alert auth-alert--success mt-3">{message}</div> : null}
-        {errorMessage ? <div className="auth-alert auth-alert--error mt-3">{errorMessage}</div> : null}
-
-        <div className="content-panel content-panel--nested mt-3">
-          <div className="content-panel__header">
-            <div>
-              <p className="section-eyebrow">Pré-visualização</p>
-              <h2>Como a comunidade verá sua postagem</h2>
-            </div>
-          </div>
-
-          <article className="preview-card">
-            <div className="preview-card__top">
-              <span className="post-badge">{previewTag}</span>
-              <span>{form.resourceLink ? 'Com mídia' : 'Somente texto'}</span>
-            </div>
-            <h3>{previewTitle}</h3>
-            <p>{previewDescription}</p>
-            <div className="preview-card__author">
-              <div className="preview-card__avatar">{currentUser?.name?.[0] ?? 'M'}</div>
-              <div>
-                <strong>{currentUser?.name ?? 'Teachgram'}</strong>
-                <small>@{currentUser?.username ?? 'teachgram'}</small>
-              </div>
-            </div>
-          </article>
-        </div>
-      </section>
-
-      <Modal
-        open={showModal}
-        title="Criar nova publicação"
-        subtitle={step === 'link' ? 'Adicione um link para começar' : 'Escreva o conteúdo da postagem'}
-        onClose={closeModal}
-        size={step === 'link' ? 'sm' : 'md'}
-        className={step === 'link' ? 'teachgram-modal--post-link' : 'teachgram-modal--post-compose'}
-      >
-        {step === 'link' ? (
-          <form className="teachgram-modal__stack" onSubmit={handleNext}>
-            <input
-              className="form-control form-control-sm"
-              value={form.resourceLink}
-              onChange={(event) => setForm({ ...form, resourceLink: event.target.value })}
-              placeholder="Cole um link ou recurso"
-            />
-
-            <div className="d-flex align-items-center gap-2">
-              <label className="form-check d-flex align-items-center gap-2 mb-0">
-                <input
-                  className="form-check-input m-0"
-                  type="checkbox"
-                  checked={form.visibility === 'private'}
-                  onChange={(event) => setForm({ ...form, visibility: event.target.checked ? 'private' : 'public' })}
-                />
-                <span className="form-check-label small">Post privado</span>
-              </label>
-            </div>
-
-            <div className="teachgram-modal__actions">
-              <button type="button" className="btn btn-outline-secondary btn-sm" onClick={closeModal}>
-                Cancelar
-              </button>
-              <button type="submit" className="btn btn-primary btn-sm">
-                Avancar
-              </button>
-            </div>
-          </form>
-        ) : (
-          <form className="teachgram-modal__stack" onSubmit={handleSubmit}>
-            <div className="teachgram-compose">
-              <div className="teachgram-compose__bar">
-                <button type="button" className="teachgram-compose__back" onClick={() => setStep('link')}>
-                  ←
-                </button>
-                <button type="submit" className="teachgram-compose__share" disabled={loading}>
-                  {loading ? 'Enviando' : 'Compartilhar'}
-                </button>
+          {step === 'link' ? (
+            <form onSubmit={handleNext} className="d-flex flex-column gap-3">
+              <div className="d-flex flex-column gap-2 text-center py-4">
+                <div className="bg-light rounded-3 d-flex align-items-center justify-content-center mx-auto" style={{ width: 200, height: 200, border: '1px dashed #ccc' }}>
+                  {form.resourceLink ? (
+                    <img src={form.resourceLink} alt="Preview" className="w-100 h-100 object-fit-cover rounded-3" />
+                  ) : (
+                    <span className="text-muted small">Sem imagem</span>
+                  )}
+                </div>
+                <label className="text-danger small fw-medium" style={{ cursor: 'pointer' }}>
+                  Adicionar imagem...
+                  <input type="text" className="d-none" value={form.resourceLink} onChange={(e) => setForm({ ...form, resourceLink: e.target.value })} />
+                </label>
               </div>
 
-              <img src={form.resourceLink || heroImg} alt="Pré-visualização da publicação" className="teachgram-compose__image" />
+              <div className="d-flex align-items-center gap-2 mb-2">
+                <div className="rounded-circle text-white d-flex align-items-center justify-content-center small fw-bold" style={{ width: 32, height: 32, background: '#f2746f' }}>
+                  {currentUser?.name?.[0] ?? 'M'}
+                </div>
+                <div className="d-flex flex-column">
+                  <strong className="text-dark lh-1" style={{ fontSize: '0.8rem' }}>{currentUser?.name ?? 'Teachgram'}</strong>
+                  <span className="text-muted" style={{ fontSize: '0.7rem' }}>@{currentUser?.username ?? 'teachgram'}</span>
+                </div>
+              </div>
+
+              <textarea
+                className="form-control form-control-sm bg-light border-0"
+                rows={3}
+                placeholder="Insira a descrição da sua publicação"
+                value={form.description}
+                onChange={(e) => setForm({ ...form, description: e.target.value })}
+              />
+
+              <div className="d-flex justify-content-center mt-2">
+                <button type="submit" className="btn btn-danger btn-sm px-4 rounded-pill">
+                  Avançar
+                </button>
+              </div>
+            </form>
+          ) : (
+            <form onSubmit={handleSubmit} className="d-flex flex-column gap-3">
+              <div className="d-flex flex-column gap-2 text-center py-4">
+                <div className="bg-light rounded-3 mx-auto" style={{ width: 200, height: 200 }}>
+                  <img src={form.resourceLink || heroImg} alt="Preview" className="w-100 h-100 object-fit-cover rounded-3" />
+                </div>
+              </div>
 
               <input
-                className="form-control form-control-sm"
+                className="form-control form-control-sm bg-light border-0 mb-2"
                 value={form.title}
-                onChange={(event) => setForm({ ...form, title: event.target.value })}
+                onChange={(e) => setForm({ ...form, title: e.target.value })}
                 placeholder="Título da publicação"
               />
 
-              <textarea
-                className="teachgram-compose__caption"
-                rows={3}
-                value={form.description}
-                onChange={(event) => setForm({ ...form, description: event.target.value })}
-                placeholder="Escreva uma legenda..."
-              />
-
-              <div className="teachgram-modal__actions teachgram-modal__actions--start">
-                <button type="button" className="btn btn-link btn-sm p-0" onClick={() => setStep('link')}>
-                  Voltar
+              <div className="d-flex justify-content-center mt-2">
+                <button type="submit" className="btn btn-danger btn-sm px-4 rounded-pill" disabled={loading}>
+                  {loading ? 'Publicando...' : 'Publicar'}
                 </button>
               </div>
-            </div>
-          </form>
-        )}
-      </Modal>
+            </form>
+          )}
+        </div>
+      </div>
     </div>
   )
 }

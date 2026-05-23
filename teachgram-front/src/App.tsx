@@ -89,7 +89,7 @@ const AppRoutes = () => {
     currentUser ? <Navigate to="/feed" replace /> : page
 
   if (booting) {
-    return <LoadingPage currentUser={currentUser} />
+    return <LoadingPage />
   }
 
   return (
@@ -97,7 +97,7 @@ const AppRoutes = () => {
       <Route path="/" element={<Navigate to={currentUser ? '/feed' : '/login'} replace />} />
       <Route path="/login" element={requireGuest(<AuthPage initialMode="login" onAuthenticated={handleAuthenticated} />)} />
       <Route path="/register" element={requireGuest(<AuthPage initialMode="register" onAuthenticated={handleAuthenticated} />)} />
-      <Route path="/carregando" element={requireAuth(<LoadingPage currentUser={currentUser} />)} />
+      <Route path="/carregando" element={requireAuth(<LoadingPage />)} />
       <Route path="/feed" element={requireAuth(withShell(<FeedPage currentUser={currentUser} />))} />
       <Route path="/amigos" element={requireAuth(withShell(<FriendsPage />))} />
       <Route path="/publicar" element={requireAuth(withShell(<NewPostPage currentUser={currentUser} />))} />

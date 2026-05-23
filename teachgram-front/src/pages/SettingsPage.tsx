@@ -1,6 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import type { User as AuthUser } from '../models/User'
-import { Modal } from '../components/Modal'
 import { getApiErrorMessage } from '../services/errorService'
 import { deleteCurrentUser, updateCurrentUser } from '../services/userService'
 
@@ -20,12 +19,11 @@ export const SettingsPage = ({ currentUser, onCurrentUserChange, onLogout }: Set
     profileLink: currentUser?.profileLink ?? '',
     password: '',
   })
-  const [notifications, setNotifications] = useState(true)
-  const [weeklySummary, setWeeklySummary] = useState(true)
+
   const [message, setMessage] = useState('')
   const [errorMessage, setErrorMessage] = useState('')
+  const [view, setView] = useState<'menu' | 'account' | 'profile'>('menu')
   const [showDeleteAccount, setShowDeleteAccount] = useState(false)
-  const [showEditProfile, setShowEditProfile] = useState(false)
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
@@ -48,8 +46,8 @@ export const SettingsPage = ({ currentUser, onCurrentUserChange, onLogout }: Set
     try {
       const updatedUser = await updateCurrentUser(form)
       onCurrentUserChange(updatedUser)
-      setMessage('Configuracoes salvas com sucesso.')
-      setShowEditProfile(false)
+      setMessage('Configurações salvas com sucesso.')
+      setView('menu')
       setForm((current) => ({ ...current, password: '' }))
     } catch (error) {
       setErrorMessage(getApiErrorMessage(error, 'Nao foi possivel atualizar o perfil.'))
@@ -78,185 +76,140 @@ export const SettingsPage = ({ currentUser, onCurrentUserChange, onLogout }: Set
   }
 
   return (
-    <div className="page-layout page-layout--settings">
-      <section className="content-panel content-panel--wide">
-        <div className="content-panel__header">
-          <div>
-            <p className="section-eyebrow">Conta</p>
-            <h2>Atualize suas informações</h2>
-          </div>
-          <button type="button" className="btn btn-outline-primary btn-sm" onClick={() => setShowEditProfile(true)}>
-            Editar perfil
+    <div className="p-4 p-md-5 w-100">
+      {view === 'menu' && (
+        <div style={{ maxWidth: 320 }}>
+          <button type="button" className="btn btn-link p-0 text-danger text-decoration-none mb-4 d-flex align-items-center gap-2" onClick={() => window.history.back()}>
+            <span style={{ fontSize: '1.2rem' }}>←</span>
           </button>
-        </div>
 
-        <form className="settings-form" onSubmit={handleSubmit}>
-          <div className="form-grid form-grid--two">
-            <label className="field">
-              <span>Nome</span>
-              <input value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} />
-            </label>
-            <label className="field">
-              <span>Username</span>
-              <input value={form.username} onChange={(event) => setForm({ ...form, username: event.target.value })} />
-            </label>
-          </div>
-
-          <label className="field">
-            <span>E-mail</span>
-            <input type="email" value={form.email} onChange={(event) => setForm({ ...form, email: event.target.value })} />
-          </label>
-
-          <div className="form-grid form-grid--two">
-            <label className="field">
-              <span>Celular</span>
-              <input value={form.phone} onChange={(event) => setForm({ ...form, phone: event.target.value })} />
-            </label>
-            <label className="field">
-              <span>Foto de perfil</span>
-              <input value={form.profileLink} onChange={(event) => setForm({ ...form, profileLink: event.target.value })} />
-            </label>
-          </div>
-
-          <label className="field">
-            <span>Bio</span>
-            <textarea rows={5} value={form.bio} onChange={(event) => setForm({ ...form, bio: event.target.value })} />
-          </label>
-
-          <label className="field">
-            <span>Nova senha</span>
-            <input
-              type="password"
-              value={form.password}
-              onChange={(event) => setForm({ ...form, password: event.target.value })}
-              placeholder="Preencha apenas se quiser trocar"
-            />
-          </label>
-
-          {message ? <div className="auth-alert auth-alert--success">{message}</div> : null}
-          {errorMessage ? <div className="auth-alert auth-alert--error">{errorMessage}</div> : null}
-
-          <div className="form-actions">
-            <button type="button" className="secondary-button" onClick={() => setShowDeleteAccount(true)}>
+          <div className="d-flex flex-column gap-4 mt-2">
+            <button type="button" className="btn btn-link text-dark text-decoration-none text-start d-flex justify-content-between align-items-center p-0 fw-medium" onClick={() => setView('account')}>
+              Configurações da conta <span className="text-muted">›</span>
+            </button>
+            <button type="button" className="btn btn-link text-dark text-decoration-none text-start d-flex justify-content-between align-items-center p-0 fw-medium" onClick={() => setView('profile')}>
+              Editar perfil <span className="text-muted">›</span>
+            </button>
+            <button type="button" className="btn btn-link text-danger text-decoration-none text-start p-0 fw-medium mt-2" onClick={() => setShowDeleteAccount(true)}>
               Excluir conta
             </button>
-            <button type="submit" className="primary-button" disabled={loading}>
-              {loading ? 'Salvando...' : 'Salvar alterações'}
-            </button>
-          </div>
-        </form>
-      </section>
-
-      <aside className="page-aside">
-        <section className="content-panel content-panel--aside">
-          <div className="content-panel__header">
-            <div>
-              <p className="section-eyebrow">Preferências</p>
-              <h2>Notificações e resumo</h2>
-            </div>
-          </div>
-
-          <div className="toggle-list">
-            <label className="toggle-item">
-              <div>
-                <strong>Notificações instantâneas</strong>
-                <p>Receba alertas quando alguem interagir com suas publicações.</p>
-              </div>
-              <input type="checkbox" checked={notifications} onChange={() => setNotifications(!notifications)} />
-            </label>
-
-            <label className="toggle-item">
-              <div>
-                <strong>Resumo semanal</strong>
-                <p>Veja um resumo das suas interações todas as segundas-feiras.</p>
-              </div>
-              <input type="checkbox" checked={weeklySummary} onChange={() => setWeeklySummary(!weeklySummary)} />
-            </label>
-          </div>
-        </section>
-      </aside>
-
-      <Modal
-        open={showEditProfile}
-        title="Editar perfil"
-        subtitle="Atualize sua foto, nome e bio"
-        onClose={() => setShowEditProfile(false)}
-        size="sm"
-        className="teachgram-modal--profile"
-      >
-        <form
-          className="teachgram-modal__stack"
-          onSubmit={async (event) => {
-            event.preventDefault()
-            await persistChanges()
-          }}
-        >
-          <div className="teachgram-profile-modal__avatar-row">
-            <div
-              className="teachgram-profile-modal__avatar"
-              style={
-                form.profileLink
-                  ? {
-                      backgroundImage: `url(${form.profileLink})`,
-                      backgroundSize: 'cover',
-                      backgroundPosition: 'center',
-                      color: 'transparent',
-                    }
-                  : undefined
-              }
-            >
-              {form.name?.[0] ?? 'M'}
-            </div>
-            <div className="teachgram-profile-modal__hint">
-              <strong>Foto de perfil</strong>
-              <span>{form.profileLink || 'Adicione um link de imagem para aparecer aqui.'}</span>
-            </div>
-          </div>
-
-          <label className="field">
-            <span>Nome</span>
-            <input value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} />
-          </label>
-          <label className="field">
-            <span>Nome de usuário</span>
-            <input value={form.username} onChange={(event) => setForm({ ...form, username: event.target.value })} />
-          </label>
-          <label className="field">
-            <span>Bio</span>
-            <textarea rows={3} value={form.bio} onChange={(event) => setForm({ ...form, bio: event.target.value })} />
-          </label>
-
-          <div className="teachgram-modal__actions">
-            <button type="button" className="btn btn-outline-secondary btn-sm" onClick={() => setShowEditProfile(false)}>
-              Cancelar
-            </button>
-            <button type="submit" className="btn btn-primary btn-sm" disabled={loading}>
-              Atualizar
-            </button>
-          </div>
-        </form>
-      </Modal>
-
-      <Modal
-        open={showDeleteAccount}
-        title="Excluir conta"
-        subtitle="Todos os seus dados serao removidos"
-        onClose={() => setShowDeleteAccount(false)}
-        size="sm"
-        className="teachgram-modal--confirm"
-      >
-        <div className="teachgram-modal__stack teachgram-modal__stack--center">
-          <p className="mb-0 small text-muted">Tem certeza que deseja continuar?</p>
-          <div className="teachgram-modal__actions teachgram-modal__actions--center">
-            <button type="button" className="btn btn-outline-secondary btn-sm" onClick={() => setShowDeleteAccount(false)}>
-              Cancelar
-            </button>
-            <button type="button" className="btn btn-danger btn-sm" onClick={handleDelete} disabled={loading}>
-              Confirmar
-            </button>
           </div>
         </div>
-      </Modal>
+      )}
+
+      {view === 'account' && (
+        <div style={{ maxWidth: 360 }}>
+          <div className="d-flex align-items-center gap-3 mb-4">
+            <button type="button" className="btn btn-link p-0 text-danger text-decoration-none d-flex align-items-center" onClick={() => setView('menu')}>
+              <span style={{ fontSize: '1.2rem' }}>←</span>
+            </button>
+          </div>
+          <h2 className="h6 fw-bold mb-4">Configurações da conta</h2>
+
+          <div className="d-flex flex-column gap-3 mb-4">
+            <div>
+              <label className="text-dark small fw-bold mb-1">Nome</label>
+              <input className="form-control form-control-sm bg-light border-0" value={currentUser?.name || ''} disabled />
+            </div>
+            <div>
+              <label className="text-dark small fw-bold mb-1">Username</label>
+              <input className="form-control form-control-sm bg-light border-0" value={currentUser?.username || ''} disabled />
+            </div>
+            <div>
+              <label className="text-dark small fw-bold mb-1">E-mail</label>
+              <input className="form-control form-control-sm bg-light border-0" value={currentUser?.email || ''} disabled />
+            </div>
+            <div>
+              <label className="text-dark small fw-bold mb-1">Senha</label>
+              <input type="password" className="form-control form-control-sm bg-light border-0" value="••••••••" disabled />
+            </div>
+          </div>
+
+          <button type="button" className="btn btn-danger btn-sm px-4 rounded-pill" onClick={() => setView('profile')}>
+            Editar
+          </button>
+        </div>
+      )}
+
+      {view === 'profile' && (
+        <div style={{ maxWidth: 360 }}>
+          <div className="d-flex align-items-center gap-3 mb-4">
+            <button type="button" className="btn btn-link p-0 text-danger text-decoration-none d-flex align-items-center" onClick={() => setView('menu')}>
+              <span style={{ fontSize: '1.2rem' }}>←</span>
+            </button>
+          </div>
+
+          {message ? <div className="auth-alert auth-alert--success mb-3">{message}</div> : null}
+          {errorMessage ? <div className="auth-alert auth-alert--error mb-3">{errorMessage}</div> : null}
+
+          <form onSubmit={handleSubmit} className="d-flex flex-column gap-4">
+            <div className="d-flex flex-column align-items-center gap-2 mb-2">
+              <div
+                className="rounded-circle d-flex align-items-center justify-content-center text-white h3 mb-0"
+                style={
+                  form.profileLink
+                    ? {
+                        width: 80, height: 80,
+                        backgroundImage: `url(${form.profileLink})`,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        color: 'transparent',
+                      }
+                    : { width: 80, height: 80, background: '#7f7f7f' }
+                }
+              >
+                {!form.profileLink && (form.name?.[0] ?? 'M')}
+              </div>
+              <label className="text-center w-100">
+                <span className="text-danger small" style={{ cursor: 'pointer' }}>Insira o link da sua foto de perfil...</span>
+                <input type="text" className="d-none" value={form.profileLink} onChange={(e) => setForm({ ...form, profileLink: e.target.value })} />
+              </label>
+            </div>
+
+            <div className="d-flex flex-column gap-3">
+              <div>
+                <label className="text-dark small fw-bold mb-1">Nome</label>
+                <input className="form-control form-control-sm bg-light border-0" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
+              </div>
+              <div>
+                <label className="text-dark small fw-bold mb-1">Nome de usuário</label>
+                <input className="form-control form-control-sm bg-light border-0" value={form.username} onChange={(e) => setForm({ ...form, username: e.target.value })} />
+              </div>
+              <div>
+                <label className="text-dark small fw-bold mb-1">Bio</label>
+                <textarea rows={3} className="form-control form-control-sm bg-light border-0" value={form.bio} onChange={(e) => setForm({ ...form, bio: e.target.value })} />
+                <small className="text-muted d-block mt-1" style={{ fontSize: '0.65rem' }}>Adicione no máximo detalhes em até 150 caracteres <span className="text-danger">▼</span></small>
+              </div>
+            </div>
+
+            <div className="d-flex gap-2">
+              <button type="button" className="btn btn-outline-secondary btn-sm px-4 rounded-pill" onClick={() => setView('menu')}>
+                Cancelar
+              </button>
+              <button type="submit" className="btn btn-danger btn-sm px-4 rounded-pill" disabled={loading}>
+                {loading ? 'Salvando...' : 'Salvar'}
+              </button>
+            </div>
+          </form>
+        </div>
+      )}
+
+      {showDeleteAccount && (
+        <div className="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style={{ background: 'rgba(0,0,0,0.1)', zIndex: 1050 }}>
+          <div className="bg-white rounded-4 p-4 shadow-sm text-center" style={{ width: 320 }}>
+            <h3 className="h6 fw-bold mb-2">Excluir conta</h3>
+            <p className="small text-muted mb-4">Tem certeza que deseja excluir sua conta?</p>
+            <div className="d-flex justify-content-center gap-3">
+              <button type="button" className="btn btn-outline-secondary btn-sm px-4 rounded-pill" onClick={() => setShowDeleteAccount(false)}>
+                Cancelar
+              </button>
+              <button type="button" className="btn btn-danger btn-sm px-4 rounded-pill" onClick={handleDelete} disabled={loading}>
+                Excluir
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

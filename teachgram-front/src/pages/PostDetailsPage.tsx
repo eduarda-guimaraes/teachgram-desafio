@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Modal } from '../components/Modal'
@@ -24,7 +25,7 @@ export const PostDetailsPage = ({ currentUser }: PostDetailsPageProps) => {
 
     if (!postId) {
       setLoading(false)
-      setErrorMessage('Publicacao nao encontrada.')
+      setErrorMessage('Publicação não encontrada.')
       return
     }
 
@@ -33,7 +34,7 @@ export const PostDetailsPage = ({ currentUser }: PostDetailsPageProps) => {
         setPost(responsePost)
         setRelatedItems(feed.filter((item) => item.id !== responsePost.id).slice(0, 2))
       })
-      .catch((error) => setErrorMessage(getApiErrorMessage(error, 'Nao foi possivel abrir esta publicacao.')))
+      .catch((error) => setErrorMessage(getApiErrorMessage(error, 'Nao foi possivel abrir esta publicação.')))
       .finally(() => setLoading(false))
   }, [id])
 
@@ -48,7 +49,7 @@ export const PostDetailsPage = ({ currentUser }: PostDetailsPageProps) => {
       const updated = await likePost(post.id)
       setPost(updated)
     } catch (error) {
-      setErrorMessage(getApiErrorMessage(error, 'Nao foi possivel curtir a publicacao.'))
+      setErrorMessage(getApiErrorMessage(error, 'Nao foi possivel curtir a publicação.'))
     }
   }
 
@@ -61,7 +62,7 @@ export const PostDetailsPage = ({ currentUser }: PostDetailsPageProps) => {
       await deletePost(post.id)
       navigate('/feed', { replace: true })
     } catch (error) {
-      setErrorMessage(getApiErrorMessage(error, 'Nao foi possivel excluir a publicacao.'))
+      setErrorMessage(getApiErrorMessage(error, 'Não foi possível excluir a publicação.'))
       setShowDelete(false)
     }
   }
@@ -69,9 +70,9 @@ export const PostDetailsPage = ({ currentUser }: PostDetailsPageProps) => {
   if (loading) {
     return (
       <div className="single-page-card">
-        <p className="section-eyebrow">Publicacao</p>
+        <p className="section-eyebrow">Publicação</p>
         <h1>Carregando detalhes</h1>
-        <p>Estamos preparando o conteudo deste post.</p>
+        <p>Estamos preparando o conteúdo deste post.</p>
       </div>
     )
   }
@@ -79,8 +80,8 @@ export const PostDetailsPage = ({ currentUser }: PostDetailsPageProps) => {
   if (!post) {
     return (
       <div className="single-page-card">
-        <p className="section-eyebrow">Publicacao nao encontrada</p>
-        <h1>Nao foi possivel abrir este post.</h1>
+        <p className="section-eyebrow">Publicação não encontrada</p>
+        <h1>Não foi possível abrir este post.</h1>
         <p>{errorMessage || 'Talvez ele tenha sido removido ou o link esteja incorreto.'}</p>
         <Link to="/feed" className="primary-button">
           Voltar ao feed
@@ -97,7 +98,7 @@ export const PostDetailsPage = ({ currentUser }: PostDetailsPageProps) => {
 
           <div className="detail-panel__hero">
             <span className={post.isPrivate ? 'post-badge post-badge--private' : 'post-badge'}>
-              {post.isPrivate ? 'Privado' : 'Publico'}
+              {post.isPrivate ? 'Privado' : 'Público'}
             </span>
             <h2>{post.title}</h2>
             <p>{post.description}</p>
@@ -123,20 +124,20 @@ export const PostDetailsPage = ({ currentUser }: PostDetailsPageProps) => {
             </article>
             <article className="detail-meta-card">
               <strong>{new Date(post.createdAt).toLocaleDateString('pt-BR')}</strong>
-              <span>Publicacao</span>
+              <span>Publicação</span>
             </article>
           </div>
 
           <div className="content-panel content-panel--nested">
             <div className="content-panel__header">
               <div>
-                <p className="section-eyebrow">Interacao</p>
+                <p className="section-eyebrow">Interação</p>
                 <h2>Conversa da comunidade</h2>
               </div>
             </div>
 
             <div className="stack-card">
-              <p>Essa tela já esta pronta para curtidas e exibicao detalhada do post.</p>
+              <p>Essa tela já esta pronta para curtidas e exibição detalhada do post.</p>
               <div className="form-actions">
                 <button type="button" className="secondary-button" onClick={handleLike}>
                   Curtir
@@ -174,7 +175,7 @@ export const PostDetailsPage = ({ currentUser }: PostDetailsPageProps) => {
           <section className="content-panel content-panel--aside">
             <div className="content-panel__header">
               <div>
-                <p className="section-eyebrow">Acao rapida</p>
+                <p className="section-eyebrow">Ação rápida</p>
                 <h2>Compartilhe o post</h2>
               </div>
             </div>
@@ -186,7 +187,7 @@ export const PostDetailsPage = ({ currentUser }: PostDetailsPageProps) => {
               </button>
               {isOwner ? (
                 <button type="button" className="btn btn-outline-danger btn-sm" onClick={() => setShowDelete(true)}>
-                  Excluir publicacao
+                  Excluir publicação
                 </button>
               ) : null}
             </div>
@@ -196,14 +197,14 @@ export const PostDetailsPage = ({ currentUser }: PostDetailsPageProps) => {
 
       <Modal
         open={showDelete}
-        title="Excluir publicacao?"
+        title="Excluir publicação ?"
         subtitle="Essa acao nao podera ser desfeita"
         onClose={() => setShowDelete(false)}
         size="sm"
         className="teachgram-modal--confirm"
       >
         <div className="teachgram-modal__stack teachgram-modal__stack--center">
-          <p className="mb-0 small text-muted">Voce realmente deseja apagar esta publicacao?</p>
+          <p className="mb-0 small text-muted">Voce realmente deseja apagar esta publicação?</p>
           <div className="teachgram-modal__actions teachgram-modal__actions--center">
             <button type="button" className="btn btn-outline-secondary btn-sm" onClick={() => setShowDelete(false)}>
               Cancelar

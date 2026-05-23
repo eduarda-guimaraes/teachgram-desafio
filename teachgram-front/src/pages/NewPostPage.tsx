@@ -24,13 +24,13 @@ export const NewPostPage = ({ currentUser }: NewPostPageProps) => {
   const [errorMessage, setErrorMessage] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const previewTitle = form.title || 'Titulo da sua publicacao'
+  const previewTitle = form.title || 'Título da sua publicação'
   const previewDescription =
     form.description ||
-    'Escreva uma ideia, compartilhe um material ou descreva uma pratica que pode inspirar outras pessoas.'
+    'Escreva uma ideia, compartilhe um material ou descreva uma prática que pode inspirar outras pessoas.'
 
   const previewTag = useMemo(
-    () => (form.visibility === 'private' ? 'Privado' : 'Publico'),
+    () => (form.visibility === 'private' ? 'Privado' : 'Público'),
     [form.visibility],
   )
 
@@ -45,18 +45,18 @@ export const NewPostPage = ({ currentUser }: NewPostPageProps) => {
 
     try {
       await createPost({
-        title: form.title || 'Nova publicacao',
+        title: form.title || 'Nova publicação',
         description: form.description,
         photoLink: form.resourceLink || undefined,
         isPrivate: form.visibility === 'private',
       })
 
-      setMessage('Sua publicacao foi compartilhada com sucesso.')
+      setMessage('Sua publicação foi compartilhada com sucesso.')
       setForm(initialValues)
       setStep('link')
       closeModal()
     } catch (error) {
-      setErrorMessage(getApiErrorMessage(error, 'Nao foi possivel criar a publicacao.'))
+      setErrorMessage(getApiErrorMessage(error, 'Não foi possível criar a publicação.'))
     } finally {
       setLoading(false)
     }
@@ -72,8 +72,8 @@ export const NewPostPage = ({ currentUser }: NewPostPageProps) => {
       <section className="content-panel content-panel--wide">
         <div className="content-panel__header">
           <div>
-            <p className="section-eyebrow">Novo conteudo</p>
-            <h2>Monte uma nova publicacao</h2>
+            <p className="section-eyebrow">Novo conteúdo</p>
+            <h2>Monte uma nova publicação</h2>
           </div>
           <button type="button" className="btn btn-outline-primary btn-sm" onClick={() => setShowModal(true)}>
             Abrir modal
@@ -81,7 +81,7 @@ export const NewPostPage = ({ currentUser }: NewPostPageProps) => {
         </div>
 
         <div className="compose-page__hint alert alert-light border small mb-0">
-          O fluxo abaixo abre como modal, igual ao Figma. Se preferir, use o botao para reabrir.
+          O fluxo abaixo abre como modal, igual ao Figma. Se preferir, use o botão para reabrir.
         </div>
 
         {message ? <div className="auth-alert auth-alert--success mt-3">{message}</div> : null}
@@ -90,15 +90,15 @@ export const NewPostPage = ({ currentUser }: NewPostPageProps) => {
         <div className="content-panel content-panel--nested mt-3">
           <div className="content-panel__header">
             <div>
-              <p className="section-eyebrow">Pre-visualizacao</p>
-              <h2>Como a comunidade vera sua postagem</h2>
+              <p className="section-eyebrow">Pré-visualização</p>
+              <h2>Como a comunidade verá sua postagem</h2>
             </div>
           </div>
 
           <article className="preview-card">
             <div className="preview-card__top">
               <span className="post-badge">{previewTag}</span>
-              <span>{form.resourceLink ? 'Com midia' : 'Somente texto'}</span>
+              <span>{form.resourceLink ? 'Com mídia' : 'Somente texto'}</span>
             </div>
             <h3>{previewTitle}</h3>
             <p>{previewDescription}</p>
@@ -115,8 +115,8 @@ export const NewPostPage = ({ currentUser }: NewPostPageProps) => {
 
       <Modal
         open={showModal}
-        title="Criar nova publicacao"
-        subtitle={step === 'link' ? 'Adicione um link para comecar' : 'Escreva o conteudo da postagem'}
+        title="Criar nova publicação"
+        subtitle={step === 'link' ? 'Adicione um link para começar' : 'Escreva o conteúdo da postagem'}
         onClose={closeModal}
         size={step === 'link' ? 'sm' : 'md'}
         className={step === 'link' ? 'teachgram-modal--post-link' : 'teachgram-modal--post-compose'}
@@ -163,13 +163,13 @@ export const NewPostPage = ({ currentUser }: NewPostPageProps) => {
                 </button>
               </div>
 
-              <img src={form.resourceLink || heroImg} alt="Previa da publicacao" className="teachgram-compose__image" />
+              <img src={form.resourceLink || heroImg} alt="Pré-visualização da publicação" className="teachgram-compose__image" />
 
               <input
                 className="form-control form-control-sm"
                 value={form.title}
                 onChange={(event) => setForm({ ...form, title: event.target.value })}
-                placeholder="Titulo da publicacao"
+                placeholder="Título da publicação"
               />
 
               <textarea

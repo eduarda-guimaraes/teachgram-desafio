@@ -46,6 +46,10 @@
   border-radius: 14px;
   padding: 12px 18px;
   font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
 }
 
 .primary-button {
@@ -940,14 +944,24 @@
 
 .panel-card,
 .content-panel {
-  padding: 22px;
+  padding: 28px;
 }
 
 .page-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 320px;
-  gap: 20px;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 28px;
   align-items: start;
+}
+
+/* Feed page uses single-column layout (no right aside) */
+.page-layout.page-layout--feed {
+  grid-template-columns: minmax(0, 1fr);
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 16px;
+  box-sizing: border-box;
 }
 
 .content-panel--wide,
@@ -993,8 +1007,13 @@
 
 .highlight-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 16px;
+}
+
+/* Espaçamento extra entre os cards de destaque e o painel de feed */
+.feed-column .content-panel {
+  margin-top: 18px;
 }
 
 .highlight-card {
@@ -1050,7 +1069,7 @@
 }
 
 .post-list {
-  gap: 18px;
+  gap: 28px;
 }
 
 .post-card {
@@ -1063,8 +1082,8 @@
 
 .post-card__media {
   position: relative;
-  min-height: 180px;
-  padding: 20px;
+  min-height: 140px;
+  padding: 16px;
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -1082,9 +1101,10 @@
 .post-card__avatar {
   position: relative;
   z-index: 1;
-  width: 58px;
-  height: 58px;
+  width: 48px;
+  height: 48px;
   border: 2px solid rgba(255, 255, 255, 0.8);
+  font-size: 0.95rem;
 }
 
 .post-badge,
@@ -1121,9 +1141,35 @@
 }
 
 .post-card__body {
-  padding: 20px;
+  padding: 16px;
   display: grid;
-  gap: 14px;
+  gap: 12px;
+}
+
+/* Responsive: make post cards slightly narrower on large screens and stack on small */
+/* Keep feed single-column: one post per line */
+@media (min-width: 1200px) {
+  .post-list {
+    grid-template-columns: 1fr;
+  }
+  .post-card {
+    max-width: none;
+    margin-inline: 0;
+  }
+}
+
+@media (max-width: 599px) {
+  .post-card__media {
+    min-height: 120px;
+    padding: 12px;
+  }
+  .post-card__body {
+    padding: 12px;
+  }
+  .post-card__avatar {
+    width: 40px;
+    height: 40px;
+  }
 }
 
 .post-card__meta {

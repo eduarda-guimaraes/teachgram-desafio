@@ -104,41 +104,7 @@ export const FeedPage = ({ currentUser }: FeedPageProps) => {
         </div>
       </section>
 
-      <aside className="page-aside">
-        <section className="content-panel content-panel--aside">
-          <div className="content-panel__header">
-            <div>
-              <p className="section-eyebrow">Atalho rápido</p>
-              <h2>O que você pode fazer hoje</h2>
-            </div>
-          </div>
-
-          <div className="aside-cta">
-            <p>
-              {currentUser?.name ?? 'Você'} pode começar uma nova conversa, publicar um material ou
-              revisar ideias salvas.
-            </p>
-            <Link to="/publicar" className="primary-button primary-button--full">
-              Nova publicação
-            </Link>
-          </div>
-        </section>
-
-        <section className="content-panel content-panel--aside">
-          <div className="content-panel__header">
-            <div>
-              <p className="section-eyebrow">Dicas da comunidade</p>
-              <h2>Pequenos lembretes</h2>
-            </div>
-          </div>
-
-          <ul className="tip-list">
-            {teachingTips.map((tip) => (
-              <li key={tip}>{tip}</li>
-            ))}
-          </ul>
-        </section>
-      </aside>
+      {/* Right aside removed to keep feed simple and centered */}
     </div>
   )
 }

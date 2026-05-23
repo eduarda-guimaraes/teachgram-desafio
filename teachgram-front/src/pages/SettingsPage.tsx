@@ -83,7 +83,7 @@ export const SettingsPage = ({ currentUser, onCurrentUserChange, onLogout }: Set
         <div className="content-panel__header">
           <div>
             <p className="section-eyebrow">Conta</p>
-            <h2>Atualize suas informacoes</h2>
+            <h2>Atualize suas informações</h2>
           </div>
           <button type="button" className="btn btn-outline-primary btn-sm" onClick={() => setShowEditProfile(true)}>
             Editar perfil
@@ -141,7 +141,7 @@ export const SettingsPage = ({ currentUser, onCurrentUserChange, onLogout }: Set
               Excluir conta
             </button>
             <button type="submit" className="primary-button" disabled={loading}>
-              {loading ? 'Salvando...' : 'Salvar alteracoes'}
+              {loading ? 'Salvando...' : 'Salvar alterações'}
             </button>
           </div>
         </form>
@@ -151,16 +151,16 @@ export const SettingsPage = ({ currentUser, onCurrentUserChange, onLogout }: Set
         <section className="content-panel content-panel--aside">
           <div className="content-panel__header">
             <div>
-              <p className="section-eyebrow">Preferencias</p>
-              <h2>Notificacoes e resumo</h2>
+              <p className="section-eyebrow">Preferências</p>
+              <h2>Notificações e resumo</h2>
             </div>
           </div>
 
           <div className="toggle-list">
             <label className="toggle-item">
               <div>
-                <strong>Notificacoes instantaneas</strong>
-                <p>Receba alertas quando alguem interagir com suas publicacoes.</p>
+                <strong>Notificações instantâneas</strong>
+                <p>Receba alertas quando alguem interagir com suas publicações.</p>
               </div>
               <input type="checkbox" checked={notifications} onChange={() => setNotifications(!notifications)} />
             </label>
@@ -168,7 +168,7 @@ export const SettingsPage = ({ currentUser, onCurrentUserChange, onLogout }: Set
             <label className="toggle-item">
               <div>
                 <strong>Resumo semanal</strong>
-                <p>Veja um resumo das suas interacoes todas as segundas-feiras.</p>
+                <p>Veja um resumo das suas interações todas as segundas-feiras.</p>
               </div>
               <input type="checkbox" checked={weeklySummary} onChange={() => setWeeklySummary(!weeklySummary)} />
             </label>
@@ -218,7 +218,7 @@ export const SettingsPage = ({ currentUser, onCurrentUserChange, onLogout }: Set
             <input value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} />
           </label>
           <label className="field">
-            <span>Nome de usuario</span>
+            <span>Nome de usuário</span>
             <input value={form.username} onChange={(event) => setForm({ ...form, username: event.target.value })} />
           </label>
           <label className="field">

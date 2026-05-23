@@ -51,7 +51,6 @@ export const LoginForm = ({ initialMode = 'login', onAuthenticated }: LoginFormP
       ...current,
       [field]: value,
     }))
-    // Clear field-specific error when user types
     if (errors[field]) {
       setErrors((current) => {
         const updated = { ...current }
@@ -124,7 +123,6 @@ export const LoginForm = ({ initialMode = 'login', onAuthenticated }: LoginFormP
       return
     }
 
-    // Register mode validation
     if (!form.name.trim()) {
       validationErrors.name = 'Campo não preenchido'
     }
@@ -133,12 +131,6 @@ export const LoginForm = ({ initialMode = 'login', onAuthenticated }: LoginFormP
     }
     if (!form.username.trim()) {
       validationErrors.username = 'Campo não preenchido'
-    }
-    if (!form.bio.trim()) {
-      validationErrors.bio = 'Campo não preenchido'
-    }
-    if (!form.phone.trim()) {
-      validationErrors.phone = 'Campo não preenchido'
     }
     if (!form.password) {
       validationErrors.password = 'Campo não preenchido'

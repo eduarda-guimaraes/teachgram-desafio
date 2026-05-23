@@ -5,7 +5,6 @@ export const fetchFeedPosts = async (): Promise<Post[]> => {
   try {
     const response = await api.get<Post[]>('/posts/feed')
     
-    // Extrai posts mockados
     const mockPosts: Post[] = []
     const friends = (mockFriendsData as any).friends || []
     friends.forEach((friend: any) => {
@@ -24,7 +23,6 @@ export const fetchFeedPosts = async (): Promise<Post[]> => {
 
     return [...mockPosts, ...response.data]
   } catch (error) {
-    // Se a API falhar, pelo menos retorna os mock posts
     const mockPosts: Post[] = []
     const friends = (mockFriendsData as any).friends || []
     friends.forEach((friend: any) => {

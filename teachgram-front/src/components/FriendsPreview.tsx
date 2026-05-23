@@ -4,7 +4,6 @@ import type { User as AuthUser } from '../models/User';
 import { PostCard } from './PostCard';
 import friendsData from '../data/mockFriends.json';
 
-// Types for the mock data
 interface MockFriend extends UserSummary {
   bio?: string;
   posts: Post[];

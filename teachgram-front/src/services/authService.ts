@@ -3,8 +3,6 @@ import type { AuthResponse, LoginCredentials, RegisterCredentials } from '../typ
 
 export const loginUser = async (credentials: LoginCredentials): Promise<AuthResponse> => {
   const response = await api.post<AuthResponse>('/auth/login', credentials)
-  // Se o backend não retornar um token (ou retornar vazio), geramos localmente
-  // o token Basic a partir do email:password para garantir compatibilidade.
   const token = response.data.token || btoa(`${credentials.email.trim()}:${credentials.password}`)
   setStoredToken(token)
   return response.data

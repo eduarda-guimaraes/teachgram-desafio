@@ -6,6 +6,7 @@ import { fetchUserById } from '../services/userService'
 import { getImageUrl } from '../utils/ImageUtils'
 import type { User as AuthUser } from '../models/User'
 import type { Post, User } from '../types'
+import mockFriendsData from '../data/mockFriends.json'
 
 interface ProfilePageProps {
   currentUser: AuthUser | null
@@ -101,10 +102,12 @@ export const ProfilePage = ({ currentUser }: ProfilePageProps) => {
             <span>Posts</span>
           </article>
           <div className="vr" style={{ opacity: 0.15 }}></div>
-          <article>
-            <strong>{profile?.friendsCount ?? 0}</strong>
-            <span>Amigos</span>
-          </article>
+          <Link to="/amigos" style={{ textDecoration: 'none', color: 'inherit' }}>
+            <article style={{ cursor: 'pointer' }}>
+              <strong>{isOwnProfile ? ((mockFriendsData as any).friends?.length || 0) : (profile?.friendsCount ?? 0)}</strong>
+              <span>Amigos</span>
+            </article>
+          </Link>
         </div>
 
         <div className="profile-posts-grid">

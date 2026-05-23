@@ -1132,7 +1132,6 @@ html, body, #root {
   gap: 16px;
 }
 
-/* Espaçamento extra entre os cards de destaque e o painel de feed */
 .feed-column .content-panel {
   margin-top: 18px;
 }

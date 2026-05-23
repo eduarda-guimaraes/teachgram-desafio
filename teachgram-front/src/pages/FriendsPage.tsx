@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { fetchFriends } from '../services/userService'
 import { getApiErrorMessage } from '../services/errorService'
+import { getImageUrl } from '../utils/ImageUtils'
 import type { UserSummary } from '../types'
 
 const PAGE_SIZE = 4
@@ -80,7 +81,7 @@ export const FriendsPage = () => {
                      style={
                        friend.profileLink
                          ? {
-                             backgroundImage: `url(${friend.profileLink})`,
+                             backgroundImage: `url(${getImageUrl(friend.profileLink)})`,
                              backgroundSize: 'cover',
                              backgroundPosition: 'center',
                              color: 'transparent',

@@ -3,6 +3,7 @@ import type { User as AuthUser } from '../models/User'
 import heroImg from '../assets/hero.png'
 import { createPost } from '../services/postService'
 import { getApiErrorMessage } from '../services/errorService'
+import { convertImageToBase64AndSave, getImageUrl } from '../utils/ImageUtils'
 
 interface NewPostPageProps {
   currentUser: AuthUser | null
@@ -73,15 +74,30 @@ export const NewPostPage = ({ currentUser }: NewPostPageProps) => {
               <div className="d-flex flex-column gap-2 text-center py-4">
                 <div className="bg-light rounded-3 d-flex align-items-center justify-content-center mx-auto" style={{ width: 200, height: 200, border: '1px dashed #ccc' }}>
                   {form.resourceLink ? (
-                    <img src={form.resourceLink} alt="Preview" className="w-100 h-100 object-fit-cover rounded-3" />
+                    <img src={getImageUrl(form.resourceLink)} alt="Preview" className="w-100 h-100 object-fit-cover rounded-3" />
                   ) : (
                     <span className="text-muted small">Sem imagem</span>
                   )}
                 </div>
-                <label className="text-danger small fw-medium" style={{ cursor: 'pointer' }}>
-                  Adicionar imagem...
-                  <input type="text" className="d-none" value={form.resourceLink} onChange={(e) => setForm({ ...form, resourceLink: e.target.value })} />
-                </label>
+                <div className="w-100 mt-2 text-start">
+                  <label className="text-dark small fw-bold mb-1">Upload de Imagem</label>
+                  <input 
+                    type="file" 
+                    accept="image/*" 
+                    className="form-control form-control-sm bg-light border-0" 
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        try {
+                          const key = await convertImageToBase64AndSave(file);
+                          setForm({ ...form, resourceLink: key });
+                        } catch (err) {
+                          setErrorMessage('Erro ao salvar a imagem. Ela pode ser muito grande.');
+                        }
+                      }
+                    }} 
+                  />
+                </div>
               </div>
 
               <div className="d-flex align-items-center gap-2 mb-2">

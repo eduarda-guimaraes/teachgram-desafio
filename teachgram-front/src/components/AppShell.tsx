@@ -2,6 +2,7 @@ import { Link, NavLink } from 'react-router-dom'
 import type { ReactNode } from 'react'
 import type { User as AuthUser } from '../models/User'
 import logoImg from '../assets/logo.png'
+import { IconHome, IconPeople, IconUser, IconSettings, IconPlusSquare } from './Icons'
 
 interface AppShellProps {
   currentUser: AuthUser | null
@@ -10,60 +11,50 @@ interface AppShellProps {
 }
 
 const navigationItems = [
-  { to: '/feed', label: 'Feed', icon: '⌂' },
-  { to: '/amigos', label: 'Amigos', icon: '◫' },
-  { to: '/perfil', label: 'Perfil', icon: '◉' },
-  { to: '/configuracoes', label: 'Configurações', icon: '⚙' },
-  { to: '/publicar', label: 'Criar', icon: '+' },
+  { to: '/feed', label: 'Feed', icon: <IconHome size={20} /> },
+  { to: '/amigos', label: 'Amigos', icon: <IconPeople size={20} /> },
+  { to: '/perfil', label: 'Perfil', icon: <IconUser size={20} /> },
+  { to: '/configuracoes', label: 'Configurações', icon: <IconSettings size={20} /> },
+  { to: '/publicar', label: 'Criar', icon: <IconPlusSquare size={20} /> },
 ]
 
 export const AppShell = ({ currentUser: _currentUser, onLogout, children }: AppShellProps) => {
   return (
     <div className="app-shell app-shell--figma">
       <aside className="app-sidebar">
-        <div className="d-flex flex-column h-100 gap-3">
+        <div className="app-sidebar__inner">
           <div className="app-sidebar__brand">
-            <Link to="/feed" className="app-brand__link text-decoration-none">
-              <span className="app-back-link" aria-hidden="true">
-                ←
-              </span>
+            <Link to="/feed" className="app-brand__link text-decoration-none d-flex align-items-center gap-2">
               <img className="app-brand__logo" src={logoImg} alt="Teachgram" />
+              <span className="app-brand__name">Teachgram</span>
             </Link>
           </div>
 
-          <nav className="app-nav d-flex flex-column" aria-label="Navegação principal">
+          <nav className="app-nav" aria-label="Navegação principal">
             {navigationItems.map((item) => (
               <NavLink
                 key={item.to}
                 to={item.to}
                 className={({ isActive }) =>
-                  [
-                    'app-nav__item',
-                    'd-flex',
-                    'align-items-center',
-                    'text-decoration-none',
-                    isActive ? 'is-active' : '',
-                  ]
-                    .filter(Boolean)
-                    .join(' ')
+                  ['app-nav__item', isActive ? 'is-active' : ''].filter(Boolean).join(' ')
                 }
               >
-                <span className="app-nav__icon d-flex align-items-center justify-content-center" aria-hidden="true">
+                <span className="app-nav__icon" aria-hidden="true">
                   {item.icon}
                 </span>
-                <span>{item.label}</span>
+                <span className="app-nav__label">{item.label}</span>
               </NavLink>
             ))}
           </nav>
 
-          <button type="button" className="app-logout-button d-flex align-items-center gap-2" onClick={onLogout}>
+          <button type="button" className="app-logout-button" onClick={onLogout}>
             Sair
           </button>
         </div>
       </aside>
 
       <main className="app-content">
-        <section className="app-board">{children}</section>
+        <div className="app-board">{children}</div>
       </main>
     </div>
   )

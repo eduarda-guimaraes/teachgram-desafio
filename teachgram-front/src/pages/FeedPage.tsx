@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom'
 import { PostCard } from '../components/PostCard'
 
 import { getApiErrorMessage } from '../services/errorService'
-import { fetchFeedPosts, likePost } from '../services/postService'
+import { fetchFeedPosts, likePost, deletePost, updatePost } from '../services/postService'
+import { getImageUrl } from '../utils/ImageUtils'
 import type { User as AuthUser } from '../models/User'
 import type { Post } from '../types'
 
@@ -54,8 +55,7 @@ export const FeedPage = ({ currentUser: _currentUser }: FeedPageProps) => {
     if (!postToDelete) return
     setLoading(true)
     try {
-      // Assuming deletePost exists in postService, but we might just mock it
-      // await deletePost(postToDelete.id)
+      await deletePost(postToDelete.id)
       setPosts((current) => current.filter((p) => p.id !== postToDelete.id))
       setPostToDelete(null)
     } catch (error) {
@@ -64,6 +64,37 @@ export const FeedPage = ({ currentUser: _currentUser }: FeedPageProps) => {
       setLoading(false)
     }
   }
+
+  const [postToEdit, setPostToEdit] = useState<Post | null>(null)
+  const [editDescription, setEditDescription] = useState('')
+
+  const handleEditClick = (id: number) => {
+    const post = posts.find(p => p.id === id)
+    if (post) {
+      setPostToEdit(post)
+      setEditDescription(post.description || '')
+    }
+  }
+
+  const handleEditSubmit = async () => {
+    if (!postToEdit) return
+    setLoading(true)
+    try {
+      const updated = await updatePost(postToEdit.id, {
+        title: postToEdit.title,
+        description: editDescription,
+        photoLink: postToEdit.photoLink || undefined,
+        isPrivate: postToEdit.isPrivate
+      })
+      setPosts((current) => current.map((p) => (p.id === updated.id ? updated : p)))
+      setPostToEdit(null)
+    } catch (error) {
+      setErrorMessage(getApiErrorMessage(error, 'Não foi possível editar a publicação.'))
+    } finally {
+      setLoading(false)
+    }
+  }
+
 
   return (
     <div className="page-layout page-layout--feed">
@@ -100,7 +131,7 @@ export const FeedPage = ({ currentUser: _currentUser }: FeedPageProps) => {
                   isOwner={post.user.id === _currentUser?.id}
                   onLike={handleLike} 
                   onDelete={() => setPostToDelete(post)}
-                  onEdit={(id) => console.log('Edit post', id)}
+                  onEdit={handleEditClick}
                 />
               ))}
             </div>
@@ -130,6 +161,41 @@ export const FeedPage = ({ currentUser: _currentUser }: FeedPageProps) => {
               <button type="button" className="btn btn-danger btn-sm px-4 rounded-pill" onClick={handleDelete} disabled={loading}>
                 {loading ? 'Excluindo...' : 'Excluir'}
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {postToEdit && (
+        <div className="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style={{ background: 'rgba(0,0,0,0.4)', zIndex: 1050 }}>
+          <div className="bg-white rounded-4 shadow-sm d-flex flex-column" style={{ width: 360, overflow: 'hidden' }}>
+            <div className="d-flex align-items-center justify-content-between p-3 border-bottom">
+              <button type="button" className="btn btn-link text-danger p-0 text-decoration-none" onClick={() => setPostToEdit(null)}>
+                <span style={{ fontSize: '1.2rem', fontWeight: 'bold' }}>×</span>
+              </button>
+              <h3 className="h6 fw-bold mb-0 text-dark">Editar publicação</h3>
+              <button type="button" className="btn btn-link text-danger p-0 text-decoration-none small text-decoration-underline" onClick={handleEditSubmit} disabled={loading}>
+                {loading ? 'Salvando...' : 'Salvar'}
+              </button>
+            </div>
+            
+            <div className="d-flex flex-column">
+              {postToEdit.photoLink ? (
+                <img src={getImageUrl(postToEdit.photoLink)} alt="Post preview" style={{ width: '100%', maxHeight: '300px', objectFit: 'cover' }} />
+              ) : (
+                <div style={{ width: '100%', height: '200px', background: '#f4f0ee' }} />
+              )}
+              
+              <div className="p-3">
+                <textarea
+                  className="form-control border-0 shadow-none p-0 text-muted"
+                  rows={2}
+                  value={editDescription}
+                  onChange={(e) => setEditDescription(e.target.value)}
+                  placeholder="Escreva uma descrição..."
+                  style={{ resize: 'none', fontSize: '0.9rem' }}
+                />
+              </div>
             </div>
           </div>
         </div>

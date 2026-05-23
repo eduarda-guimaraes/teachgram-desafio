@@ -25,6 +25,11 @@ export const deletePost = async (postId: number): Promise<void> => {
   await api.delete(`/posts/${postId}`)
 }
 
+export const updatePost = async (postId: number, payload: PostPayload): Promise<Post> => {
+  const response = await api.put<Post>(`/posts/${postId}`, payload)
+  return response.data
+}
+
 export const likePost = async (postId: number): Promise<Post> => {
   const response = await api.post<Post>(`/posts/${postId}/like`)
   return response.data

@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react'
 import type { User as AuthUser } from '../models/User'
 import { getApiErrorMessage } from '../services/errorService'
 import { deleteCurrentUser, updateCurrentUser } from '../services/userService'
+import { convertImageToBase64AndSave, getImageUrl } from '../utils/ImageUtils'
 
 interface SettingsPageProps {
   currentUser: AuthUser | null
@@ -150,7 +151,7 @@ export const SettingsPage = ({ currentUser, onCurrentUserChange, onLogout }: Set
                   form.profileLink
                     ? {
                         width: 80, height: 80,
-                        backgroundImage: `url(${form.profileLink})`,
+                        backgroundImage: `url(${getImageUrl(form.profileLink)})`,
                         backgroundSize: 'cover',
                         backgroundPosition: 'center',
                         color: 'transparent',
@@ -160,13 +161,28 @@ export const SettingsPage = ({ currentUser, onCurrentUserChange, onLogout }: Set
               >
                 {!form.profileLink && (form.name?.[0] ?? 'M')}
               </div>
-              <label className="text-center w-100">
-                <span className="text-danger small" style={{ cursor: 'pointer' }}>Insira o link da sua foto de perfil...</span>
-                <input type="text" className="d-none" value={form.profileLink} onChange={(e) => setForm({ ...form, profileLink: e.target.value })} />
-              </label>
             </div>
 
             <div className="d-flex flex-column gap-3">
+              <div>
+                <label className="text-dark small fw-bold mb-1">Foto de Perfil (Upload)</label>
+                <input 
+                  type="file" 
+                  accept="image/*" 
+                  className="form-control form-control-sm bg-light border-0" 
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      try {
+                        const key = await convertImageToBase64AndSave(file);
+                        setForm({ ...form, profileLink: key });
+                      } catch (err) {
+                        setErrorMessage('Erro ao salvar a imagem. Ela pode ser muito grande.');
+                      }
+                    }
+                  }} 
+                />
+              </div>
               <div>
                 <label className="text-dark small fw-bold mb-1">Nome</label>
                 <input className="form-control form-control-sm bg-light border-0" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />

@@ -4,6 +4,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Modal } from '../components/Modal'
 import { deletePost, fetchFeedPosts, fetchPostById, likePost } from '../services/postService'
 import { getApiErrorMessage } from '../services/errorService'
+import { getImageUrl } from '../utils/ImageUtils'
 import type { User as AuthUser } from '../models/User'
 import type { Post } from '../types'
 
@@ -106,7 +107,7 @@ export const PostDetailsPage = ({ currentUser }: PostDetailsPageProps) => {
 
           {post.photoLink ? (
             <img
-              src={post.photoLink}
+              src={getImageUrl(post.photoLink)}
               alt={post.title}
               className="img-fluid rounded-4 mb-4"
               style={{ maxHeight: '360px', width: '100%', objectFit: 'cover' }}

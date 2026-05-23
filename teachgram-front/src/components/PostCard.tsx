@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import type { Post } from '../types'
+import { getImageUrl } from '../utils/ImageUtils'
 
 interface PostCardProps {
   post: Post
@@ -11,7 +12,6 @@ interface PostCardProps {
   onLike?: (postId: number) => void
 }
 
-
 const getAccent = (id: number) => {
   const palettes = [
     'linear-gradient(135deg, #ff8b72, #ffcf9a)',
@@ -19,7 +19,6 @@ const getAccent = (id: number) => {
     'linear-gradient(135deg, #ffb24d, #ffdca4)',
     'linear-gradient(135deg, #7fb4ff, #cce0ff)',
   ]
-
   return palettes[(id - 1) % palettes.length]
 }
 
@@ -39,8 +38,17 @@ export const PostCard = ({ post, compact = false, isOwner, onEdit, onDelete, onL
     <article className={`post-card ${compact ? 'post-card--compact' : ''}`}>
       <header className="post-card__header d-flex align-items-center justify-content-between p-3">
         <div className="d-flex align-items-center gap-2">
-          <div className="post-card__avatar-img rounded-circle d-flex align-items-center justify-content-center text-white small fw-bold" style={{ width: 36, height: 36, background: getAccent(post.id) }}>
-            {initials || 'T'}
+          <div 
+            className="post-card__avatar-img rounded-circle d-flex align-items-center justify-content-center text-white small fw-bold" 
+            style={post.user.profileLink ? { 
+              width: 36, height: 36, 
+              backgroundImage: `url(${getImageUrl(post.user.profileLink)})`, 
+              backgroundSize: 'cover', 
+              backgroundPosition: 'center',
+              color: 'transparent'
+            } : { width: 36, height: 36, background: getAccent(post.id) }}
+          >
+            {!post.user.profileLink && (initials || 'T')}
           </div>
           <div className="d-flex flex-column">
             <strong className="text-dark small lh-1 mb-1">{authorUsername}</strong>
@@ -75,7 +83,7 @@ export const PostCard = ({ post, compact = false, isOwner, onEdit, onDelete, onL
         style={
           post.photoLink
             ? {
-                backgroundImage: `url(${post.photoLink})`,
+                backgroundImage: `url(${getImageUrl(post.photoLink)})`,
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
                 minHeight: '240px',

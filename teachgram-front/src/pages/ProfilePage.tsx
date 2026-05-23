@@ -65,21 +65,13 @@ export const ProfilePage = ({ currentUser }: ProfilePageProps) => {
         {errorMessage ? <div className="auth-alert auth-alert--error mb-4">{errorMessage}</div> : null}
 
         <div className="profile-header w-100">
-          <div
-            className="profile-avatar shadow-sm"
-            style={
-              profile?.profileLink
-                ? {
-                    backgroundImage: `url(${getImageUrl(profile?.profileLink)})`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                    color: 'transparent',
-                  }
-                : undefined
-            }
-          >
-            {initials}
-          </div>
+          <div className="profile-avatar shadow-sm">
+  {profile?.profileLink ? (
+    <img src={getImageUrl(profile?.profileLink)} alt="Profile" className="w-100 h-100" style={{ objectFit: 'cover' }} />
+  ) : (
+    initials
+  )}
+</div>
 
           <div className="profile-info">
             <h2 className="mb-2">{profile?.name ?? 'Perfil'}</h2>

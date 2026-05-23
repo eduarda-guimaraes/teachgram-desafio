@@ -1,8 +1,7 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 import { useEffect, useMemo, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams, Link } from 'react-router-dom'
 import { Modal } from '../components/Modal'
-import { deletePost, fetchFeedPosts, fetchPostById, likePost } from '../services/postService'
+import { deletePost, fetchPostById, likePost } from '../services/postService'
 import { getApiErrorMessage } from '../services/errorService'
 import { getImageUrl } from '../utils/ImageUtils'
 import type { User as AuthUser } from '../models/User'
@@ -16,49 +15,37 @@ export const PostDetailsPage = ({ currentUser }: PostDetailsPageProps) => {
   const { id } = useParams()
   const navigate = useNavigate()
   const [post, setPost] = useState<Post | null>(null)
-  const [relatedItems, setRelatedItems] = useState<Post[]>([])
   const [loading, setLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState('')
   const [showDelete, setShowDelete] = useState(false)
 
   useEffect(() => {
     const postId = Number(id)
-
     if (!postId) {
       setLoading(false)
       setErrorMessage('Publicação não encontrada.')
       return
     }
-
-    Promise.all([fetchPostById(postId), fetchFeedPosts()])
-      .then(([responsePost, feed]) => {
-        setPost(responsePost)
-        setRelatedItems(feed.filter((item) => item.id !== responsePost.id).slice(0, 2))
-      })
-      .catch((error) => setErrorMessage(getApiErrorMessage(error, 'Nao foi possivel abrir esta publicação.')))
+    fetchPostById(postId)
+      .then(setPost)
+      .catch((error) => setErrorMessage(getApiErrorMessage(error, 'Não foi possível abrir a publicação.')))
       .finally(() => setLoading(false))
   }, [id])
 
-  const isOwner = useMemo(() => post?.user.id === currentUser?.id, [currentUser?.id, post?.user.id])
+  const isOwner = useMemo(() => post?.user.id === currentUser?.id, [post?.user.id, currentUser?.id])
 
   const handleLike = async () => {
-    if (!post) {
-      return
-    }
-
+    if (!post) return
     try {
       const updated = await likePost(post.id)
       setPost(updated)
     } catch (error) {
-      setErrorMessage(getApiErrorMessage(error, 'Nao foi possivel curtir a publicação.'))
+      setErrorMessage(getApiErrorMessage(error, 'Não foi possível curtir a publicação.'))
     }
   }
 
   const handleDelete = async () => {
-    if (!post) {
-      return
-    }
-
+    if (!post) return
     try {
       await deletePost(post.id)
       navigate('/feed', { replace: true })
@@ -69,150 +56,73 @@ export const PostDetailsPage = ({ currentUser }: PostDetailsPageProps) => {
   }
 
   if (loading) {
-    return (
-      <div className="single-page-card">
-        <p className="section-eyebrow">Publicação</p>
-        <h1>Carregando detalhes</h1>
-        <p>Estamos preparando o conteúdo deste post.</p>
-      </div>
-    )
+    return <div className="single-page-card"><p>Carregando...</p></div>
   }
 
   if (!post) {
     return (
       <div className="single-page-card">
-        <p className="section-eyebrow">Publicação não encontrada</p>
-        <h1>Não foi possível abrir este post.</h1>
-        <p>{errorMessage || 'Talvez ele tenha sido removido ou o link esteja incorreto.'}</p>
-        <Link to="/feed" className="primary-button">
-          Voltar ao feed
-        </Link>
+        <p>{errorMessage || 'Publicação não encontrada.'}</p>
+        <Link to="/feed" className="primary-button">Voltar ao feed</Link>
       </div>
     )
   }
 
   return (
     <>
-      <div className="page-layout page-layout--detail">
-        <section className="content-panel content-panel--wide detail-panel">
-          {errorMessage ? <div className="auth-alert auth-alert--error mb-3">{errorMessage}</div> : null}
-
-          <div className="detail-panel__hero">
-            <span className={post.isPrivate ? 'post-badge post-badge--private' : 'post-badge'}>
-              {post.isPrivate ? 'Privado' : 'Público'}
-            </span>
-            <h2>{post.title}</h2>
-            <p>{post.description}</p>
-          </div>
-
-          {post.photoLink ? (
-            <img
-              src={getImageUrl(post.photoLink)}
-              alt={post.title}
-              className="img-fluid rounded-4 mb-4"
-              style={{ maxHeight: '360px', width: '100%', objectFit: 'cover' }}
-            />
-          ) : null}
-
-          <div className="detail-meta-grid">
-            <article className="detail-meta-card">
-              <strong>{post.likesCount}</strong>
-              <span>Curtidas</span>
-            </article>
-            <article className="detail-meta-card">
-              <strong>{post.user.name}</strong>
-              <span>Autor</span>
-            </article>
-            <article className="detail-meta-card">
-              <strong>{new Date(post.createdAt).toLocaleDateString('pt-BR')}</strong>
-              <span>Publicação</span>
-            </article>
-          </div>
-
-          <div className="content-panel content-panel--nested">
-            <div className="content-panel__header">
-              <div>
-                <p className="section-eyebrow">Interação</p>
-                <h2>Conversa da comunidade</h2>
-              </div>
-            </div>
-
-            <div className="stack-card">
-              <p>Essa tela já esta pronta para curtidas e exibição detalhada do post.</p>
-              <div className="form-actions">
-                <button type="button" className="secondary-button" onClick={handleLike}>
-                  Curtir
-                </button>
-                <Link to={`/perfil/${post.user.id}`} className="primary-button">
-                  Ver perfil
-                </Link>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <aside className="page-aside">
-          <section className="content-panel content-panel--aside">
-            <div className="content-panel__header">
-              <div>
-                <p className="section-eyebrow">Relacionados</p>
-                <h2>Outras ideias parecidas</h2>
-              </div>
-            </div>
-
-            <div className="related-list">
-              {relatedItems.map((item) => (
-                <article key={item.id} className="related-item">
-                  <span className="related-item__index">{String(item.id).padStart(2, '0')}</span>
-                  <div>
-                    <strong>{item.title}</strong>
-                    <p>{item.description}</p>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </section>
-
-          <section className="content-panel content-panel--aside">
-            <div className="content-panel__header">
-              <div>
-                <p className="section-eyebrow">Ação rápida</p>
-                <h2>Compartilhe o post</h2>
-              </div>
-            </div>
-
-            <div className="stack-card">
-              <p>Convide amigos para verem essa ideia e ampliarem a conversa.</p>
-              <button type="button" className="secondary-button secondary-button--full" onClick={handleLike}>
-                Curtir agora
-              </button>
-              {isOwner ? (
-                <button type="button" className="btn btn-outline-danger btn-sm" onClick={() => setShowDelete(true)}>
-                  Excluir publicação
-                </button>
-              ) : null}
-            </div>
-          </section>
-        </aside>
+      {/* Header */}
+      <div className="d-flex align-items-center p-2 border-bottom">
+        <button type="button" className="btn btn-link" onClick={() => navigate(-1)}>← Voltar</button>
       </div>
-
+      {/* Content */}
+      <div className="p-3">
+        <div className="d-flex align-items-center mb-3">
+          <div
+            className="rounded-circle d-flex align-items-center justify-content-center text-white small fw-bold"
+            style={post.user.profileLink ? {
+              width: 36,
+              height: 36,
+              backgroundImage: `url(${getImageUrl(post.user.profileLink)})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center',
+              color: 'transparent',
+            } : { width: 36, height: 36, background: '#777' }}
+          >
+            {!post.user.profileLink && (post.user.name?.split(' ')?.filter(Boolean)?.slice(0, 2)?.map(p => p[0]?.toUpperCase()).join('') || 'T')}
+          </div>
+          <div className="ms-2">
+            <strong>{post.user.name ?? post.user.username ?? 'Teachgram'}</strong>
+            <div className="text-muted" style={{ fontSize: '0.85rem' }}>@{post.user.username ?? 'teachgram'}</div>
+          </div>
+        </div>
+        {post.photoLink && (
+          <img src={getImageUrl(post.photoLink)} alt={post.title} className="img-fluid rounded-4 mb-3" style={{ maxHeight: '500px', width: '100%', objectFit: 'cover' }} />
+        )}
+        <div className="mb-2">
+          <strong>{post.title}</strong>
+          <p className="text-muted mb-0">{post.description}</p>
+        </div>
+        <div className="d-flex align-items-center gap-3">
+          <button type="button" className="btn btn-link text-danger p-0" onClick={handleLike}>♥ {post.likesCount}</button>
+          {isOwner && (
+            <button type="button" className="btn btn-outline-danger btn-sm" onClick={() => setShowDelete(true)}>Excluir</button>
+          )}
+        </div>
+      </div>
+      {/* Delete confirmation modal */}
       <Modal
         open={showDelete}
-        title="Excluir publicação ?"
-        subtitle="Essa acao nao podera ser desfeita"
+        title="Excluir publicação?"
+        subtitle="Essa ação não poderá ser desfeita"
         onClose={() => setShowDelete(false)}
         size="sm"
         className="teachgram-modal--confirm"
       >
         <div className="teachgram-modal__stack teachgram-modal__stack--center">
-          <p className="mb-0 small text-muted">Voce realmente deseja apagar esta publicação?</p>
+          <p className="mb-0 small text-muted">Você realmente deseja apagar esta publicação?</p>
           <div className="teachgram-modal__actions teachgram-modal__actions--center">
-            <button type="button" className="btn btn-outline-secondary btn-sm" onClick={() => setShowDelete(false)}>
-              Cancelar
-            </button>
-            <button type="button" className="btn btn-danger btn-sm" onClick={handleDelete}>
-              Confirmar
-            </button>
+            <button type="button" className="btn btn-outline-secondary btn-sm" onClick={() => setShowDelete(false)}>Cancelar</button>
+            <button type="button" className="btn btn-danger btn-sm" onClick={handleDelete}>Confirmar</button>
           </div>
         </div>
       </Modal>

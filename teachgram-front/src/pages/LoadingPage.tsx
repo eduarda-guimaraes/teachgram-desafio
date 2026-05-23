@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import logoImg from '../assets/logo.png'
+import Logo from '../components/Logo'
 
 
 
@@ -19,7 +19,7 @@ export const LoadingPage = () => {
   return (
     <main className="loading-page">
       <div className="loading-page__content d-flex flex-column align-items-center gap-3">
-        <img className="loading-page__brand" src={logoImg} alt="Teachgram" />
+        <Logo className="loading-page__brand" />
         <p className="loading-page__status">Carregando...</p>
       </div>
     </main>

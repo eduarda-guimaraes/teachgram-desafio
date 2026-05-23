@@ -6,7 +6,26 @@ export const fetchCurrentUser = async (): Promise<User> => {
   return response.data
 }
 
+import mockFriendsData from '../data/mockFriends.json'
+
 export const fetchUserById = async (id: number): Promise<User> => {
+  const mockFriend = (mockFriendsData as any).friends?.find((f: any) => f.id === id);
+  if (mockFriend) {
+    return {
+      id: mockFriend.id,
+      name: mockFriend.name,
+      username: mockFriend.username,
+      profileLink: mockFriend.profileLink,
+      bio: mockFriend.bio,
+      friendsCount: 1,
+      createdAt: '2026-05-20T10:30:00Z',
+      updatedAt: '2026-05-20T10:30:00Z',
+      email: `${mockFriend.username}@example.com`,
+      role: 'USER',
+      postCount: mockFriend.posts.length
+    }
+  }
+
   const response = await api.get<User>(`/users/${id}`)
   return response.data
 }

@@ -6,6 +6,7 @@ import { getApiErrorMessage } from '../services/errorService'
 import { fetchFeedPosts, likePost, deletePost, updatePost } from '../services/postService'
 import { getImageUrl } from '../utils/ImageUtils'
 import type { User as AuthUser } from '../models/User'
+
 import type { Post } from '../types'
 
 interface FeedPageProps {
@@ -123,7 +124,7 @@ export const FeedPage = ({ currentUser: _currentUser }: FeedPageProps) => {
               <p>Estamos preparando o feed para você.</p>
             </div>
           ) : (
-            <div className="post-list">
+            <div className="post-list d-flex flex-column gap-3">
               {filteredPosts.map((post) => (
                 <PostCard 
                   key={post.id} 
@@ -148,6 +149,9 @@ export const FeedPage = ({ currentUser: _currentUser }: FeedPageProps) => {
           ) : null}
         </div>
       </section>
+
+
+
 
       {postToDelete && (
         <div className="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style={{ background: 'rgba(0,0,0,0.4)', zIndex: 1050 }}>

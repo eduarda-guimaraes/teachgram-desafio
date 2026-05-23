@@ -1,8 +1,9 @@
 import { Link, NavLink } from 'react-router-dom'
 import type { ReactNode } from 'react'
 import type { User as AuthUser } from '../models/User'
-import logoImg from '../assets/logo.png'
-import { IconHome, IconPeople, IconUser, IconSettings, IconPlusSquare } from './Icons'
+
+import { IconHome, IconPeople, IconUser, IconSettings, IconPlusSquare } from './Icons';
+import Logo from './Logo';
 
 interface AppShellProps {
   currentUser: AuthUser | null
@@ -25,7 +26,7 @@ export const AppShell = ({ currentUser: _currentUser, onLogout, children }: AppS
         <div className="app-sidebar__inner">
           <div className="app-sidebar__brand">
             <Link to="/feed" className="app-brand__link text-decoration-none d-flex align-items-center gap-2">
-              <img className="app-brand__logo" src={logoImg} alt="Teachgram" />
+              <Logo className="app-brand__logo" />
               <span className="app-brand__name">Teachgram</span>
             </Link>
           </div>

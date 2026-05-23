@@ -11,7 +11,22 @@ export const fetchPostById = async (postId: number): Promise<Post> => {
   return response.data
 }
 
+import mockFriendsData from '../data/mockFriends.json'
+
 export const fetchPostsByUser = async (userId: number): Promise<Post[]> => {
+  const mockFriend = (mockFriendsData as any).friends?.find((f: any) => f.id === userId);
+  if (mockFriend) {
+    return mockFriend.posts.map((p: any) => ({
+      ...p,
+      user: {
+        id: mockFriend.id,
+        name: mockFriend.name,
+        username: mockFriend.username,
+        profileLink: mockFriend.profileLink
+      }
+    }));
+  }
+
   const response = await api.get<Post[]>(`/posts/user/${userId}`)
   return response.data
 }

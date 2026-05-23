@@ -1,7 +1,7 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { loginUser, registerUser } from '../services/authService'
 import type { AuthResponse, LoginCredentials, RegisterCredentials } from '../types'
-import logoImg from '../assets/logo.png'
+import Logo from '../components/Logo'
 
 type AuthMode = 'login' | 'register'
 
@@ -178,7 +178,7 @@ export const LoginForm = ({ initialMode = 'login', onAuthenticated }: LoginFormP
   return (
     <section className="auth-form-shell w-100 animate-fade-in">
       <div className="auth-brand text-start">
-        <img className="auth-brand__logo img-fluid" src={logoImg} alt="Teachgram" />
+        <Logo className="auth-brand__logo img-fluid" />
       </div>
 
       <form className="auth-form d-grid gap-3" onSubmit={handleSubmit}>

@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { fetchFriends } from '../services/userService'
-import { getApiErrorMessage } from '../services/errorService'
+
 import { getImageUrl } from '../utils/ImageUtils'
 import type { UserSummary } from '../types'
+
+import mockFriendsData from '../data/mockFriends.json'
 
 const PAGE_SIZE = 4
 
@@ -12,13 +13,12 @@ export const FriendsPage = () => {
   const [page, setPage] = useState(1)
   const [friends, setFriends] = useState<UserSummary[]>([])
   const [loading, setLoading] = useState(true)
-  const [errorMessage, setErrorMessage] = useState('')
 
   useEffect(() => {
-    fetchFriends()
-      .then((response) => setFriends(response))
-      .catch((error) => setErrorMessage(getApiErrorMessage(error, 'Não foi possível carregar seus amigos.')))
-      .finally(() => setLoading(false))
+    // using mock data since backend doesn't have it yet
+    const mockFriends = (mockFriendsData as any).friends || [];
+    setFriends(mockFriends);
+    setLoading(false);
   }, [])
 
   const filteredFriends = useMemo(() => {
@@ -67,7 +67,6 @@ export const FriendsPage = () => {
         </div>
 
         <div className="friends-page__list">
-          {errorMessage ? <div className="auth-alert auth-alert--error">{errorMessage}</div> : null}
 
           {loading ? (
             <div className="empty-state">

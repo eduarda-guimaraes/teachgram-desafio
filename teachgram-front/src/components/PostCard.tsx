@@ -78,19 +78,15 @@ export const PostCard = ({ post, compact = false, isOwner, onEdit, onDelete, onL
         </p>
       </div>
 
-      <div
-        className="post-card__media w-100"
-        style={
-          post.photoLink
-            ? {
-                backgroundImage: `url(${getImageUrl(post.photoLink)})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                minHeight: '240px',
-              }
-            : { background: getAccent(post.id), minHeight: '180px' }
-        }
-      />
+      <div className="post-card__media w-100">
+        {post.photoLink ? (
+          <img src={getImageUrl(post.photoLink)} alt={post.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        ) : (
+          <div className="post-placeholder d-flex align-items-center justify-content-center text-white font-weight-bold" style={{ background: getAccent(post.id), padding: '20px', textAlign: 'center' }}>
+            {post.title}
+          </div>
+        )}
+      </div>
 
       <footer className="post-card__footer p-3 d-flex align-items-center">
         <button type="button" className="btn btn-link btn-sm p-0 text-danger text-decoration-none d-flex align-items-center gap-2" onClick={() => onLike?.(post.id)}>

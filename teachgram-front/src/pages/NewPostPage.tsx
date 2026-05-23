@@ -128,7 +128,7 @@ export const NewPostPage = ({ currentUser }: NewPostPageProps) => {
             <form onSubmit={handleSubmit} className="d-flex flex-column gap-3">
               <div className="d-flex flex-column gap-2 text-center py-4">
                 <div className="bg-light rounded-3 mx-auto" style={{ width: 200, height: 200 }}>
-                  <img src={form.resourceLink || heroImg} alt="Preview" className="w-100 h-100 object-fit-cover rounded-3" />
+                  <img src={getImageUrl(form.resourceLink) || heroImg} alt="Preview" className="w-100 h-100 object-fit-cover rounded-3" />
                 </div>
               </div>
 

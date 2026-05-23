@@ -4,14 +4,14 @@
       "id": 99901,
       "name": "Ana Silva",
       "username": "anas",
-      "profileLink": "https://example.com/avatars/ana.png",
+      "profileLink": "https://i.pravatar.cc/150?u=ana_silva",
       "bio": "Amante de fotografia e viagens",
       "posts": [
         {
           "id": 101,
           "title": "Passeio na praia",
           "description": "Dia lindo na praia com amigos",
-          "photoLink": "https://example.com/photos/beach.jpg",
+          "photoLink": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
           "likesCount": 23,
           "createdAt": "2026-05-20T10:30:00Z"
         },
@@ -19,7 +19,7 @@
           "id": 102,
           "title": "Show de música",
           "description": "Curti muito o show ontem",
-          "photoLink": "https://example.com/photos/concert.jpg",
+          "photoLink": "https://images.unsplash.com/photo-1459749411175-04bf5292ceea?auto=format&fit=crop&w=800&q=80",
           "likesCount": 45,
           "createdAt": "2026-05-22T19:15:00Z"
         }
@@ -29,14 +29,14 @@
       "id": 99902,
       "name": "Bruno Costa",
       "username": "brunoc",
-      "profileLink": "https://example.com/avatars/bruno.png",
+      "profileLink": "https://i.pravatar.cc/150?u=bruno_costa",
       "bio": "Chef de cozinha e apaixonado por esportes",
       "posts": [
         {
           "id": 201,
           "title": "Prato novo",
           "description": "Experimentando uma receita de sushi",
-          "photoLink": "https://example.com/photos/sushi.jpg",
+          "photoLink": "https://images.unsplash.com/photo-1579871494447-9811cf80d66c?auto=format&fit=crop&w=800&q=80",
           "likesCount": 67,
           "createdAt": "2026-05-21T14:00:00Z"
         }

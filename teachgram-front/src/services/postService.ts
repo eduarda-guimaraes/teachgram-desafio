@@ -2,8 +2,46 @@ import api from './api'
 import type { Post, PostPayload } from '../types'
 
 export const fetchFeedPosts = async (): Promise<Post[]> => {
-  const response = await api.get<Post[]>('/posts/feed')
-  return response.data
+  try {
+    const response = await api.get<Post[]>('/posts/feed')
+    
+    // Extrai posts mockados
+    const mockPosts: Post[] = []
+    const friends = (mockFriendsData as any).friends || []
+    friends.forEach((friend: any) => {
+      friend.posts.forEach((post: any) => {
+        mockPosts.push({
+          ...post,
+          user: {
+            id: friend.id,
+            name: friend.name,
+            username: friend.username,
+            profileLink: friend.profileLink
+          }
+        })
+      })
+    })
+
+    return [...mockPosts, ...response.data]
+  } catch (error) {
+    // Se a API falhar, pelo menos retorna os mock posts
+    const mockPosts: Post[] = []
+    const friends = (mockFriendsData as any).friends || []
+    friends.forEach((friend: any) => {
+      friend.posts.forEach((post: any) => {
+        mockPosts.push({
+          ...post,
+          user: {
+            id: friend.id,
+            name: friend.name,
+            username: friend.username,
+            profileLink: friend.profileLink
+          }
+        })
+      })
+    })
+    return mockPosts
+  }
 }
 
 export const fetchPostById = async (postId: number): Promise<Post> => {

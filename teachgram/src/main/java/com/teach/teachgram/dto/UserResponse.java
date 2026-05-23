@@ -9,7 +9,11 @@ public record UserResponse(
     String email,
     String phone,
     String bio,
-    String profileLink
+    String profileLink,
+    String createdAt,
+    String updatedAt,
+    Boolean deleted,
+    int friendsCount
 ) {
     public static UserResponse fromEntity(User user) {
         return new UserResponse(
@@ -19,7 +23,11 @@ public record UserResponse(
             user.getMail(),
             user.getPhone(),
             user.getBio(),
-            user.getProfileLink()
+            user.getProfileLink(),
+            user.getCreatedAt() == null ? null : user.getCreatedAt().toString(),
+            user.getUpdatedAt() == null ? null : user.getUpdatedAt().toString(),
+            user.getDeleted(),
+            user.getFriends() == null ? 0 : user.getFriends().size()
         );
     }
 }

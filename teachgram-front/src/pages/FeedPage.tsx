@@ -1,8 +1,11 @@
-﻿import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { PostCard } from '../components/PostCard'
-import { feedPosts, highlightCards, teachingTips } from '../data/mock'
+import { highlightCards, teachingTips } from '../data/mock'
+import { getApiErrorMessage } from '../services/errorService'
+import { fetchFeedPosts, likePost } from '../services/postService'
 import type { User as AuthUser } from '../models/User'
+import type { Post } from '../types'
 
 interface FeedPageProps {
   currentUser: AuthUser | null
@@ -10,21 +13,40 @@ interface FeedPageProps {
 
 export const FeedPage = ({ currentUser }: FeedPageProps) => {
   const [search, setSearch] = useState('')
+  const [posts, setPosts] = useState<Post[]>([])
+  const [loading, setLoading] = useState(true)
+  const [errorMessage, setErrorMessage] = useState('')
+
+  useEffect(() => {
+    fetchFeedPosts()
+      .then((response) => setPosts(response))
+      .catch((error) => setErrorMessage(getApiErrorMessage(error, 'Não foi possível carregar o feed.')))
+      .finally(() => setLoading(false))
+  }, [])
 
   const filteredPosts = useMemo(() => {
     const query = search.trim().toLowerCase()
 
     if (!query) {
-      return feedPosts
+      return posts
     }
 
-    return feedPosts.filter((post) => {
+    return posts.filter((post) => {
       const author = post.user.name ?? post.user.username ?? ''
       return [post.title, post.description ?? '', author].some((value) =>
         value.toLowerCase().includes(query),
       )
     })
-  }, [search])
+  }, [posts, search])
+
+  const handleLike = async (postId: number) => {
+    try {
+      const updatedPost = await likePost(postId)
+      setPosts((current) => current.map((post) => (post.id === postId ? updatedPost : post)))
+    } catch (error) {
+      setErrorMessage(getApiErrorMessage(error, 'Não foi possível curtir a publicação.'))
+    }
+  }
 
   return (
     <div className="page-layout page-layout--feed">
@@ -55,13 +77,22 @@ export const FeedPage = ({ currentUser }: FeedPageProps) => {
             </label>
           </div>
 
-          <div className="post-list">
-            {filteredPosts.map((post) => (
-              <PostCard key={post.id} post={post} />
-            ))}
-          </div>
+          {errorMessage ? <div className="auth-alert auth-alert--error mb-3">{errorMessage}</div> : null}
 
-          {filteredPosts.length === 0 ? (
+          {loading ? (
+            <div className="empty-state">
+              <h3>Carregando publicações</h3>
+              <p>Estamos preparando o feed para você.</p>
+            </div>
+          ) : (
+            <div className="post-list">
+              {filteredPosts.map((post) => (
+                <PostCard key={post.id} post={post} onLike={handleLike} />
+              ))}
+            </div>
+          )}
+
+          {!loading && filteredPosts.length === 0 ? (
             <div className="empty-state">
               <h3>Nenhuma publicação encontrada</h3>
               <p>Tente outro termo ou crie uma nova ideia para compartilhar com a comunidade.</p>

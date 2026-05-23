@@ -1,28 +1,42 @@
-import { useMemo, useState } from 'react'
-import { friendSuggestions } from '../data/mock'
+import { useEffect, useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { fetchFriends } from '../services/userService'
+import { getApiErrorMessage } from '../services/errorService'
+import type { UserSummary } from '../types'
 
-const statusLabel: Record<'online' | 'busy' | 'studying', string> = {
-  online: 'Ver perfil',
-  busy: 'Ver perfil',
-  studying: 'Ver perfil',
-}
+const PAGE_SIZE = 4
 
 export const FriendsPage = () => {
   const [search, setSearch] = useState('')
+  const [page, setPage] = useState(1)
+  const [friends, setFriends] = useState<UserSummary[]>([])
+  const [loading, setLoading] = useState(true)
+  const [errorMessage, setErrorMessage] = useState('')
+
+  useEffect(() => {
+    fetchFriends()
+      .then((response) => setFriends(response))
+      .catch((error) => setErrorMessage(getApiErrorMessage(error, 'Não foi possível carregar seus amigos.')))
+      .finally(() => setLoading(false))
+  }, [])
 
   const filteredFriends = useMemo(() => {
     const query = search.trim().toLowerCase()
 
     if (!query) {
-      return friendSuggestions
+      return friends
     }
 
-    return friendSuggestions.filter((friend) =>
-      [friend.name, friend.username, friend.bio, friend.course].some((value) =>
+    return friends.filter((friend) =>
+      [friend.name, friend.username, friend.bio ?? ''].some((value) =>
         value.toLowerCase().includes(query),
       ),
     )
-  }, [search])
+  }, [friends, search])
+
+  const totalPages = Math.max(1, Math.ceil(filteredFriends.length / PAGE_SIZE))
+  const safePage = Math.min(page, totalPages)
+  const pageFriends = filteredFriends.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE)
 
   return (
     <div className="friends-page position-relative min-vh-100 d-flex align-items-center justify-content-center p-3 p-md-4">
@@ -35,7 +49,10 @@ export const FriendsPage = () => {
             <input
               className="form-control border-start-0"
               value={search}
-              onChange={(event) => setSearch(event.target.value)}
+              onChange={(event) => {
+                setSearch(event.target.value)
+                setPage(1)
+              }}
               placeholder="Buscar amigos"
               aria-label="Buscar amigos"
             />
@@ -45,69 +62,87 @@ export const FriendsPage = () => {
         <section className="friends-page__modal modal-content border-0 rounded-4 shadow-lg">
           <header className="friends-page__header modal-header border-0 pb-2">
             <h2 className="modal-title h6 fw-bold mb-0">Amigos</h2>
-            <button type="button" className="friends-page__close btn btn-link p-0 text-decoration-none" aria-label="Fechar">
-              ×
-            </button>
+            <Link to="/feed" className="friends-page__close btn btn-link p-0 text-decoration-none" aria-label="Fechar">
+              x
+            </Link>
           </header>
 
           <div className="modal-body pt-2">
+            {errorMessage ? <div className="auth-alert auth-alert--error mb-3">{errorMessage}</div> : null}
+
             <div className="friends-page__list list-group list-group-flush">
-              {filteredFriends.map((friend) => (
-                <article key={friend.id} className="friend-row list-group-item px-0 py-2 border-0">
-                  <div className="d-flex align-items-center gap-3">
-                    <div className={`friend-row__avatar friend-card__avatar--${friend.avatarSeed} flex-shrink-0`}>
-                      {friend.name
-                        .split(' ')
-                        .filter(Boolean)
-                        .slice(0, 2)
-                        .map((part) => part[0]?.toUpperCase())
-                        .join('')}
-                    </div>
+              {loading ? (
+                <div className="empty-state">
+                  <h3>Carregando amigos</h3>
+                  <p>Estamos buscando sua rede agora.</p>
+                </div>
+              ) : pageFriends.length > 0 ? (
+                pageFriends.map((friend) => (
+                  <article key={friend.id} className="friend-row list-group-item px-0 py-2 border-0">
+                    <div className="d-flex align-items-center gap-3">
+                      <div
+                        className="friend-row__avatar flex-shrink-0"
+                        style={
+                          friend.profileLink
+                            ? {
+                                backgroundImage: `url(${friend.profileLink})`,
+                                backgroundSize: 'cover',
+                                backgroundPosition: 'center',
+                                color: 'transparent',
+                              }
+                            : undefined
+                        }
+                      >
+                        {friend.name
+                          .split(' ')
+                          .filter(Boolean)
+                          .slice(0, 2)
+                          .map((part) => part[0]?.toUpperCase())
+                          .join('')}
+                      </div>
 
-                    <div className="friend-row__content flex-grow-1">
-                      <strong className="d-block">{friend.username.replace('@', '')}</strong>
-                      <p className="mb-0 text-muted small">{friend.name}</p>
-                    </div>
+                      <div className="friend-row__content flex-grow-1">
+                        <strong className="d-block">{friend.name}</strong>
+                        <p className="mb-0 text-muted small">@{friend.username}</p>
+                      </div>
 
-                    <button type="button" className="friend-row__button btn btn-danger btn-sm">
-                      {statusLabel[friend.status]}
-                    </button>
-                  </div>
-                </article>
-              ))}
+                      <Link to={`/perfil/${friend.id}`} className="friend-row__button btn btn-danger btn-sm">
+                        Ver perfil
+                      </Link>
+                    </div>
+                  </article>
+                ))
+              ) : (
+                <div className="empty-state">
+                  <h3>Nenhum amigo encontrado</h3>
+                  <p>Quando você adicionar conexões, elas aparecem aqui.</p>
+                </div>
+              )}
             </div>
           </div>
 
           <footer className="friends-page__pagination modal-footer border-0 pt-0 justify-content-center">
             <nav aria-label="Paginação de amigos">
               <ul className="pagination pagination-sm mb-0">
-                <li className="page-item">
-                  <button type="button" className="page-link" aria-label="Anterior">
+                <li className={`page-item ${safePage === 1 ? 'disabled' : ''}`}>
+                  <button type="button" className="page-link" aria-label="Anterior" onClick={() => setPage((current) => Math.max(1, current - 1))}>
                     ←
                   </button>
                 </li>
-                <li className="page-item">
-                  <button type="button" className="page-link active" aria-current="page">
-                    1
-                  </button>
-                </li>
-                <li className="page-item">
-                  <button type="button" className="page-link">
-                    2
-                  </button>
-                </li>
-                <li className="page-item">
-                  <button type="button" className="page-link">
-                    3
-                  </button>
-                </li>
-                <li className="page-item">
-                  <button type="button" className="page-link">
-                    4
-                  </button>
-                </li>
-                <li className="page-item">
-                  <button type="button" className="page-link" aria-label="Próxima">
+                {Array.from({ length: totalPages }, (_, index) => index + 1).map((item) => (
+                  <li key={item} className="page-item">
+                    <button
+                      type="button"
+                      className={`page-link ${item === safePage ? 'active' : ''}`}
+                      aria-current={item === safePage ? 'page' : undefined}
+                      onClick={() => setPage(item)}
+                    >
+                      {item}
+                    </button>
+                  </li>
+                ))}
+                <li className={`page-item ${safePage === totalPages ? 'disabled' : ''}`}>
+                  <button type="button" className="page-link" aria-label="Próxima" onClick={() => setPage((current) => Math.min(totalPages, current + 1))}>
                     →
                   </button>
                 </li>

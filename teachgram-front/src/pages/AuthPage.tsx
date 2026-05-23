@@ -1,11 +1,11 @@
 import heroImg from '../assets/hero.png'
 import logoImg from '../assets/logo.png'
 import { LoginForm } from '../components/LoginForm'
-import type { User } from '../models/User'
+import type { AuthResponse } from '../types'
 
 interface AuthPageProps {
   initialMode?: 'login' | 'register'
-  onAuthenticated: (user: User) => void
+  onAuthenticated: (auth: AuthResponse) => void
 }
 
 export const AuthPage = ({ initialMode = 'login', onAuthenticated }: AuthPageProps) => {

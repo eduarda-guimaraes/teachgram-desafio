@@ -1,6 +1,6 @@
 ﻿import { useEffect, useState, type FormEvent } from 'react'
 import { loginUser, registerUser } from '../services/authService'
-import type { LoginCredentials, RegisterCredentials, User } from '../models/User'
+import type { AuthResponse, LoginCredentials, RegisterCredentials } from '../types'
 import logoImg from '../assets/logo.png'
 
 type AuthMode = 'login' | 'register'
@@ -27,7 +27,7 @@ const initialFormState: FormState = {
 
 interface LoginFormProps {
   initialMode?: AuthMode
-  onAuthenticated?: (user: User) => void
+  onAuthenticated?: (auth: AuthResponse) => void
 }
 
 export const LoginForm = ({ initialMode = 'login', onAuthenticated }: LoginFormProps) => {
@@ -63,22 +63,18 @@ export const LoginForm = ({ initialMode = 'login', onAuthenticated }: LoginFormP
   }
 
   const handleLogin = async (credentials: LoginCredentials) => {
-    const user = await loginUser(credentials)
-    setSuccessMessage(`Bem-vindo, ${user.name ?? user.username}.`)
-    onAuthenticated?.(user)
-    return user
+    const auth = await loginUser(credentials)
+    setSuccessMessage(`Bem-vindo, ${auth.user.name ?? auth.user.username}.`)
+    onAuthenticated?.(auth)
+    return auth
   }
 
   const handleRegister = async (credentials: RegisterCredentials) => {
-    const user = await registerUser(credentials)
-    setMode('login')
+    const auth = await registerUser(credentials)
     setErrorMessage('')
-    setSuccessMessage('Conta criada com sucesso. Agora você pode entrar.')
-    setForm({
-      ...initialFormState,
-      email: credentials.email,
-    })
-    return user
+    setSuccessMessage('Conta criada com sucesso. Bem-vindo ao Teachgram.')
+    onAuthenticated?.(auth)
+    return auth
   }
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {

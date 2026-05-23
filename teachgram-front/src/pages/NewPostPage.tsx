@@ -1,8 +1,9 @@
-import { useMemo, useState } from 'react'
-import type { FormEvent } from 'react'
+import { useMemo, useState, type FormEvent } from 'react'
 import type { User as AuthUser } from '../models/User'
 import { Modal } from '../components/Modal'
 import heroImg from '../assets/hero.png'
+import { createPost } from '../services/postService'
+import { getApiErrorMessage } from '../services/errorService'
 
 interface NewPostPageProps {
   currentUser: AuthUser | null
@@ -11,7 +12,6 @@ interface NewPostPageProps {
 const initialValues = {
   title: '',
   description: '',
-  topic: 'Planejamento',
   visibility: 'public',
   resourceLink: '',
 }
@@ -21,14 +21,16 @@ export const NewPostPage = ({ currentUser }: NewPostPageProps) => {
   const [showModal, setShowModal] = useState(true)
   const [step, setStep] = useState<'link' | 'compose'>('link')
   const [message, setMessage] = useState('')
+  const [errorMessage, setErrorMessage] = useState('')
+  const [loading, setLoading] = useState(false)
 
-  const previewTitle = form.title || 'Título da sua publicação'
+  const previewTitle = form.title || 'Titulo da sua publicacao'
   const previewDescription =
     form.description ||
-    'Escreva uma ideia, compartilhe um material ou descreva uma prática que pode inspirar outras pessoas.'
+    'Escreva uma ideia, compartilhe um material ou descreva uma pratica que pode inspirar outras pessoas.'
 
   const previewTag = useMemo(
-    () => (form.visibility === 'private' ? 'Privado' : 'Público'),
+    () => (form.visibility === 'private' ? 'Privado' : 'Publico'),
     [form.visibility],
   )
 
@@ -36,12 +38,28 @@ export const NewPostPage = ({ currentUser }: NewPostPageProps) => {
     setShowModal(false)
   }
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    setMessage('Sua publicação foi preparada com sucesso para a comunidade.')
-    setForm(initialValues)
-    setStep('link')
-    closeModal()
+    setLoading(true)
+    setErrorMessage('')
+
+    try {
+      await createPost({
+        title: form.title || 'Nova publicacao',
+        description: form.description,
+        photoLink: form.resourceLink || undefined,
+        isPrivate: form.visibility === 'private',
+      })
+
+      setMessage('Sua publicacao foi compartilhada com sucesso.')
+      setForm(initialValues)
+      setStep('link')
+      closeModal()
+    } catch (error) {
+      setErrorMessage(getApiErrorMessage(error, 'Nao foi possivel criar a publicacao.'))
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleNext = (event: FormEvent<HTMLFormElement>) => {
@@ -54,8 +72,8 @@ export const NewPostPage = ({ currentUser }: NewPostPageProps) => {
       <section className="content-panel content-panel--wide">
         <div className="content-panel__header">
           <div>
-            <p className="section-eyebrow">Novo conteúdo</p>
-            <h2>Monte uma nova publicação</h2>
+            <p className="section-eyebrow">Novo conteudo</p>
+            <h2>Monte uma nova publicacao</h2>
           </div>
           <button type="button" className="btn btn-outline-primary btn-sm" onClick={() => setShowModal(true)}>
             Abrir modal
@@ -63,23 +81,24 @@ export const NewPostPage = ({ currentUser }: NewPostPageProps) => {
         </div>
 
         <div className="compose-page__hint alert alert-light border small mb-0">
-          O fluxo abaixo abre como modal, igual ao Figma. Se preferir, use o botão para reabrir.
+          O fluxo abaixo abre como modal, igual ao Figma. Se preferir, use o botao para reabrir.
         </div>
 
         {message ? <div className="auth-alert auth-alert--success mt-3">{message}</div> : null}
+        {errorMessage ? <div className="auth-alert auth-alert--error mt-3">{errorMessage}</div> : null}
 
         <div className="content-panel content-panel--nested mt-3">
           <div className="content-panel__header">
             <div>
-              <p className="section-eyebrow">Pré-visualização</p>
-              <h2>Como a comunidade verá sua postagem</h2>
+              <p className="section-eyebrow">Pre-visualizacao</p>
+              <h2>Como a comunidade vera sua postagem</h2>
             </div>
           </div>
 
           <article className="preview-card">
             <div className="preview-card__top">
               <span className="post-badge">{previewTag}</span>
-              <span>{form.topic}</span>
+              <span>{form.resourceLink ? 'Com midia' : 'Somente texto'}</span>
             </div>
             <h3>{previewTitle}</h3>
             <p>{previewDescription}</p>
@@ -96,8 +115,8 @@ export const NewPostPage = ({ currentUser }: NewPostPageProps) => {
 
       <Modal
         open={showModal}
-        title="Criar nova publicação"
-        subtitle={step === 'link' ? 'Adicione um link para começar' : 'Escreva o conteúdo da postagem'}
+        title="Criar nova publicacao"
+        subtitle={step === 'link' ? 'Adicione um link para comecar' : 'Escreva o conteudo da postagem'}
         onClose={closeModal}
         size={step === 'link' ? 'sm' : 'md'}
         className={step === 'link' ? 'teachgram-modal--post-link' : 'teachgram-modal--post-compose'}
@@ -111,12 +130,24 @@ export const NewPostPage = ({ currentUser }: NewPostPageProps) => {
               placeholder="Cole um link ou recurso"
             />
 
+            <div className="d-flex align-items-center gap-2">
+              <label className="form-check d-flex align-items-center gap-2 mb-0">
+                <input
+                  className="form-check-input m-0"
+                  type="checkbox"
+                  checked={form.visibility === 'private'}
+                  onChange={(event) => setForm({ ...form, visibility: event.target.checked ? 'private' : 'public' })}
+                />
+                <span className="form-check-label small">Post privado</span>
+              </label>
+            </div>
+
             <div className="teachgram-modal__actions">
               <button type="button" className="btn btn-outline-secondary btn-sm" onClick={closeModal}>
                 Cancelar
               </button>
               <button type="submit" className="btn btn-primary btn-sm">
-                Avançar
+                Avancar
               </button>
             </div>
           </form>
@@ -127,15 +158,18 @@ export const NewPostPage = ({ currentUser }: NewPostPageProps) => {
                 <button type="button" className="teachgram-compose__back" onClick={() => setStep('link')}>
                   ←
                 </button>
-                <button type="submit" className="teachgram-compose__share">
-                  Compartilhar
+                <button type="submit" className="teachgram-compose__share" disabled={loading}>
+                  {loading ? 'Enviando' : 'Compartilhar'}
                 </button>
               </div>
 
-              <img
-                src={heroImg}
-                alt="Prévia da publicação"
-                className="teachgram-compose__image"
+              <img src={form.resourceLink || heroImg} alt="Previa da publicacao" className="teachgram-compose__image" />
+
+              <input
+                className="form-control form-control-sm"
+                value={form.title}
+                onChange={(event) => setForm({ ...form, title: event.target.value })}
+                placeholder="Titulo da publicacao"
               />
 
               <textarea
